@@ -5,358 +5,336 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>GradBridge — Who Are You?</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap" rel="stylesheet" />
- 
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet" />
+
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --navy: #08172E;
-      --navy2: #0F2341;
+      --white: #ffffff;
+      --off-white: #f7f8fa;
+      --light: #eef0f4;
+      --border: #e2e5eb;
+      --text: #0f1724;
+      --muted: #6b7280;
+      --subtle: #9ca3af;
       --teal: #0D6E6E;
-      --teal-light: #1A9090;
-      --gold: #E8A838;
-      --amber: #F5C87A;
-      --sand: #F2E8D5;
+      --teal-light: #e6f4f4;
+      --gold: #D4920A;
+      --gold-light: #fef6e4;
       --terra: #C45C35;
-      --rose: #D4496A;
+      --terra-light: #fdf0eb;
+      --navy: #0f1724;
     }
- 
+
     html { scroll-behavior: smooth; }
     body {
       font-family: 'DM Sans', sans-serif;
-      background: var(--navy);
-      color: var(--sand);
+      background: var(--white);
+      color: var(--text);
       min-height: 100vh;
       overflow-x: hidden;
     }
-    h1, h2, h3, h4, .syne { font-family: 'Syne', sans-serif; }
- 
-    /* ===== GRAIN ===== */
-    body::before {
-      content: '';
-      position: fixed; inset: 0;
-      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-      opacity: 0.03; pointer-events: none; z-index: 9999;
-    }
- 
+    h1, h2, h3, h4 { font-family: 'Syne', sans-serif; }
+
     /* ===== NAV ===== */
     nav {
       position: fixed; top: 0; left: 0; right: 0; z-index: 100;
       display: flex; align-items: center; justify-content: space-between;
-      padding: 18px 40px;
-      background: rgba(8,23,46,0.8);
+      padding: 16px 40px;
+      background: rgba(255,255,255,0.92);
       backdrop-filter: blur(20px);
-      border-bottom: 1px solid rgba(255,255,255,0.06);
+      border-bottom: 1px solid var(--border);
     }
     .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
     .logo-icon {
       width: 36px; height: 36px; border-radius: 10px;
-      background: linear-gradient(135deg, var(--teal), var(--terra));
+      background: linear-gradient(135deg, var(--teal), #0a5555);
       display: flex; align-items: center; justify-content: center;
       font-family: 'Syne', sans-serif; font-weight: 800; color: #fff; font-size: 15px;
     }
-    .logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; color: var(--sand); }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 700; font-size: 20px; color: var(--text); }
+
     .nav-right { display: flex; align-items: center; gap: 12px; }
     .btn-ghost {
-      padding: 8px 18px; border-radius: 8px; font-size: 13px; color: rgba(242,232,213,0.6);
-      background: transparent; border: 1px solid rgba(255,255,255,0.1);
-      cursor: pointer; transition: all 0.2s; text-decoration: none; font-family: 'Syne', sans-serif; font-weight: 600;
+      padding: 8px 18px; border-radius: 8px; font-size: 13px; color: var(--muted);
+      background: transparent; border: 1px solid var(--border);
+      cursor: pointer; transition: all 0.2s; text-decoration: none;
+      font-family: 'Syne', sans-serif; font-weight: 600;
     }
-    .btn-ghost:hover { background: rgba(255,255,255,0.07); color: var(--sand); }
+    .btn-ghost:hover { background: var(--light); color: var(--text); }
     .btn-pill {
       padding: 9px 22px; border-radius: 100px; font-size: 13px; color: #fff;
-      background: linear-gradient(135deg, var(--gold), var(--terra));
+      background: var(--navy);
       border: none; cursor: pointer; font-family: 'Syne', sans-serif; font-weight: 700;
       transition: opacity 0.2s, transform 0.2s; text-decoration: none;
     }
-    .btn-pill:hover { opacity: 0.88; transform: scale(1.02); }
- 
+    .btn-pill:hover { opacity: 0.85; transform: scale(1.02); }
+
     /* ===== HERO ===== */
     .hero {
       min-height: 100vh;
       display: flex; flex-direction: column; align-items: center; justify-content: center;
       padding: 120px 24px 80px;
       position: relative;
-      background:
-        radial-gradient(ellipse at 15% 40%, rgba(13,110,110,0.22) 0%, transparent 55%),
-        radial-gradient(ellipse at 85% 20%, rgba(232,168,56,0.12) 0%, transparent 50%),
-        radial-gradient(ellipse at 70% 85%, rgba(196,92,53,0.12) 0%, transparent 50%),
-        var(--navy);
+      background: var(--white);
     }
- 
-    /* Floating orbs */
-    .orb {
+
+    /* Soft background blobs */
+    .blob {
       position: absolute; border-radius: 50%; pointer-events: none;
-      filter: blur(60px); opacity: 0.12;
+      filter: blur(80px); opacity: 0.5;
     }
-    .orb-1 { width: 400px; height: 400px; background: var(--teal); top: 5%; left: -8%; animation: drift1 14s ease-in-out infinite; }
-    .orb-2 { width: 300px; height: 300px; background: var(--gold); top: 60%; right: -5%; animation: drift2 18s ease-in-out infinite; }
-    .orb-3 { width: 200px; height: 200px; background: var(--terra); bottom: 10%; left: 30%; animation: drift1 10s ease-in-out infinite reverse; }
- 
-    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(20px,-30px)} }
-    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-25px,20px)} }
- 
-    /* dot grid pattern */
+    .blob-1 { width: 500px; height: 500px; background: #cdeaea; top: -10%; left: -10%; animation: drift1 16s ease-in-out infinite; }
+    .blob-2 { width: 400px; height: 400px; background: #fef0c4; top: 50%; right: -8%; animation: drift2 20s ease-in-out infinite; }
+    .blob-3 { width: 300px; height: 300px; background: #fdddd0; bottom: 5%; left: 25%; animation: drift1 12s ease-in-out infinite reverse; }
+
+    @keyframes drift1 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(24px,-28px)} }
+    @keyframes drift2 { 0%,100%{transform:translate(0,0)} 50%{transform:translate(-20px,22px)} }
+
+    /* subtle dot grid */
     .dot-grid {
-      position: absolute; inset: 0; pointer-events: none; opacity: 0.07;
-      background-image: radial-gradient(circle, rgba(242,232,213,0.7) 1px, transparent 1px);
-      background-size: 32px 32px;
+      position: absolute; inset: 0; pointer-events: none; opacity: 0.45;
+      background-image: radial-gradient(circle, #cbd5e1 1px, transparent 1px);
+      background-size: 28px 28px;
+      mask-image: radial-gradient(ellipse at 50% 50%, black 30%, transparent 75%);
+      -webkit-mask-image: radial-gradient(ellipse at 50% 50%, black 30%, transparent 75%);
     }
- 
+
     /* ===== HERO CONTENT ===== */
-    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 720px; }
- 
+    .hero-content { position: relative; z-index: 2; text-align: center; max-width: 680px; }
+
     .eyebrow {
       display: inline-flex; align-items: center; gap: 6px;
       padding: 5px 14px; border-radius: 100px; font-size: 11px; letter-spacing: 0.1em;
       font-family: 'Syne', sans-serif; font-weight: 700; text-transform: uppercase;
-      background: rgba(232,168,56,0.1); border: 1px solid rgba(232,168,56,0.3);
-      color: var(--gold); margin-bottom: 28px;
+      background: var(--teal-light); border: 1px solid rgba(13,110,110,0.2);
+      color: var(--teal); margin-bottom: 24px;
     }
-    .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--gold); animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.7)} }
- 
+    .eyebrow .dot { width: 6px; height: 6px; border-radius: 50%; background: var(--teal); animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.6)} }
+
     .hero h1 {
-      font-size: clamp(44px, 7vw, 80px);
-      font-weight: 800; line-height: 1.0;
-      color: var(--sand); margin-bottom: 22px; letter-spacing: -2px;
+      font-size: clamp(42px, 6.5vw, 76px);
+      font-weight: 800; line-height: 1.02;
+      color: var(--text); margin-bottom: 20px; letter-spacing: -2.5px;
     }
-    .hero h1 .accent { color: var(--gold); }
+    .hero h1 .accent-teal { color: var(--teal); }
     .hero p {
-      font-size: 18px; color: rgba(242,232,213,0.55);
-      line-height: 1.7; max-width: 520px; margin: 0 auto 50px;
+      font-size: 17px; color: var(--muted);
+      line-height: 1.75; max-width: 500px; margin: 0 auto 48px;
     }
- 
-    /* ===== ROLE SELECTION ===== */
-    .roles-label {
-      font-family: 'Syne', sans-serif; font-size: 12px; font-weight: 600;
-      text-transform: uppercase; letter-spacing: 0.12em;
-      color: rgba(242,232,213,0.35); margin-bottom: 20px;
-    }
+
+    /* ===== ROLE CARDS ===== */
     .roles-grid {
-      display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
-      width: 100%; max-width: 860px; margin: 0 auto;
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 18px;
+      width: 100%; max-width: 900px; margin: 0 auto;
       position: relative; z-index: 2;
     }
- 
+
     .role-card {
       position: relative; overflow: hidden;
-      border-radius: 20px; padding: 32px 24px 28px;
+      border-radius: 22px; padding: 30px 26px 26px;
       cursor: pointer; text-decoration: none;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.03);
+      border: 1.5px solid var(--border);
+      background: var(--white);
       transition: transform 0.35s cubic-bezier(.22,.68,0,1.2), box-shadow 0.35s ease, border-color 0.3s ease;
       text-align: left;
       display: flex; flex-direction: column;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.05);
     }
-    .role-card::before {
-      content: ''; position: absolute; inset: 0; border-radius: 20px;
-      opacity: 0; transition: opacity 0.4s;
-    }
-    .role-card:hover { transform: translateY(-8px) scale(1.01); }
- 
-    /* Business */
-    .role-business { border-color: rgba(13,110,110,0.25); }
-    .role-business::before { background: radial-gradient(ellipse at 30% 0%, rgba(13,110,110,0.25), transparent 70%); }
-    .role-business:hover { border-color: rgba(13,110,110,0.6); box-shadow: 0 28px 60px rgba(13,110,110,0.2); }
-    .role-business:hover::before { opacity: 1; }
- 
-    /* Student */
-    .role-student { border-color: rgba(232,168,56,0.25); }
-    .role-student::before { background: radial-gradient(ellipse at 30% 0%, rgba(232,168,56,0.2), transparent 70%); }
-    .role-student:hover { border-color: rgba(232,168,56,0.6); box-shadow: 0 28px 60px rgba(232,168,56,0.15); }
-    .role-student:hover::before { opacity: 1; }
- 
-    /* Job seeker */
-    .role-jobseeker { border-color: rgba(196,92,53,0.25); }
-    .role-jobseeker::before { background: radial-gradient(ellipse at 30% 0%, rgba(196,92,53,0.22), transparent 70%); }
-    .role-jobseeker:hover { border-color: rgba(196,92,53,0.6); box-shadow: 0 28px 60px rgba(196,92,53,0.18); }
-    .role-jobseeker:hover::before { opacity: 1; }
- 
+
+    .role-business:hover { border-color: rgba(13,110,110,0.5); box-shadow: 0 20px 50px rgba(13,110,110,0.12), 0 2px 12px rgba(0,0,0,0.04); transform: translateY(-8px); }
+    .role-student:hover  { border-color: rgba(212,146,10,0.5);  box-shadow: 0 20px 50px rgba(212,146,10,0.1),  0 2px 12px rgba(0,0,0,0.04); transform: translateY(-8px); }
+    .role-jobseeker:hover{ border-color: rgba(196,92,53,0.5);   box-shadow: 0 20px 50px rgba(196,92,53,0.1),   0 2px 12px rgba(0,0,0,0.04); transform: translateY(-8px); }
+
     .role-icon {
       width: 52px; height: 52px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 24px; margin-bottom: 20px; flex-shrink: 0;
+      font-size: 22px; margin-bottom: 20px; flex-shrink: 0;
     }
-    .icon-business { background: rgba(13,110,110,0.2); border: 1px solid rgba(13,110,110,0.4); }
-    .icon-student  { background: rgba(232,168,56,0.15); border: 1px solid rgba(232,168,56,0.4); }
-    .icon-job      { background: rgba(196,92,53,0.18); border: 1px solid rgba(196,92,53,0.4); }
- 
+    .icon-business { background: var(--teal-light);  border: 1px solid rgba(13,110,110,0.2); }
+    .icon-student  { background: var(--gold-light);  border: 1px solid rgba(212,146,10,0.2); }
+    .icon-job      { background: var(--terra-light); border: 1px solid rgba(196,92,53,0.2);  }
+
+    /* Top accent stripe on hover */
+    .role-card::after {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; border-radius: 22px 22px 0 0;
+      opacity: 0; transition: opacity 0.3s;
+    }
+    .role-business::after { background: linear-gradient(90deg, var(--teal), #1ab5b5); }
+    .role-student::after  { background: linear-gradient(90deg, var(--gold), #f0b429); }
+    .role-jobseeker::after{ background: linear-gradient(90deg, var(--terra), #e07550); }
+    .role-card:hover::after { opacity: 1; }
+
     .role-title {
-      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 22px;
-      color: var(--sand); margin-bottom: 8px; line-height: 1.1;
+      font-family: 'Syne', sans-serif; font-weight: 800; font-size: 20px;
+      color: var(--text); margin-bottom: 8px;
     }
     .role-sub {
-      font-size: 13px; color: rgba(242,232,213,0.45); line-height: 1.6;
-      margin-bottom: 24px; flex: 1;
+      font-size: 13.5px; color: var(--muted); line-height: 1.65;
+      margin-bottom: 20px; flex: 1;
     }
-    .role-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 24px; }
+    .role-tags { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 22px; }
     .tag {
       font-size: 11px; padding: 3px 10px; border-radius: 100px;
       font-family: 'Syne', sans-serif; font-weight: 600;
     }
-    .tag-teal  { background: rgba(13,110,110,0.2); border: 1px solid rgba(13,110,110,0.35); color: #5ecece; }
-    .tag-gold  { background: rgba(232,168,56,0.15); border: 1px solid rgba(232,168,56,0.35); color: var(--amber); }
-    .tag-terra { background: rgba(196,92,53,0.18); border: 1px solid rgba(196,92,53,0.35); color: #e08a68; }
- 
+    .tag-teal  { background: var(--teal-light);  border: 1px solid rgba(13,110,110,0.2);  color: var(--teal); }
+    .tag-gold  { background: var(--gold-light);  border: 1px solid rgba(212,146,10,0.25); color: var(--gold); }
+    .tag-terra { background: var(--terra-light); border: 1px solid rgba(196,92,53,0.2);   color: var(--terra); }
+
     .role-cta {
-      display: flex; align-items: center; gap: 8px;
+      display: flex; align-items: center; justify-content: center; gap: 8px;
       font-family: 'Syne', sans-serif; font-weight: 700; font-size: 13px;
-      padding: 11px 20px; border-radius: 10px; width: 100%;
-      justify-content: center; transition: filter 0.2s, transform 0.2s;
-      position: relative; z-index: 1; border: none; cursor: pointer; text-decoration: none;
-      color: #fff;
+      padding: 12px 20px; border-radius: 10px; width: 100%;
+      transition: filter 0.2s, transform 0.2s;
+      border: none; cursor: pointer; text-decoration: none; color: #fff;
     }
-    .role-cta:hover { filter: brightness(1.1); transform: scale(1.02); }
+    .role-cta:hover { filter: brightness(1.08); transform: scale(1.01); }
     .cta-business { background: linear-gradient(135deg, var(--teal), #0a5555); }
-    .cta-student  { background: linear-gradient(135deg, var(--gold), #c98420); }
+    .cta-student  { background: linear-gradient(135deg, #e5a010, #c07d08); }
     .cta-job      { background: linear-gradient(135deg, var(--terra), #9c3e20); }
- 
-    .role-card .arrow {
-      display: inline-block; transition: transform 0.3s ease;
-    }
+
+    .arrow { display: inline-block; transition: transform 0.3s ease; }
     .role-card:hover .arrow { transform: translateX(4px); }
- 
+
+    /* ===== STATS ===== */
+    .stats-row {
+      display: flex; width: 100%; max-width: 900px;
+      margin: 56px auto 0; position: relative; z-index: 2;
+      border-radius: 16px; overflow: hidden;
+      border: 1.5px solid var(--border);
+      background: var(--off-white);
+    }
+    .stat { flex: 1; padding: 20px 16px; text-align: center; border-right: 1px solid var(--border); }
+    .stat:last-child { border-right: none; }
+    .stat-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 24px; color: var(--text); }
+    .stat-lbl { font-size: 11px; color: var(--subtle); margin-top: 4px; font-family: 'Syne', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
+
+    /* ===== TRUST STRIP ===== */
+    .trust-strip {
+      position: relative; z-index: 2;
+      display: flex; align-items: center; justify-content: center;
+      gap: 28px; margin-top: 36px; flex-wrap: wrap;
+    }
+    .trust-item {
+      display: flex; align-items: center; gap: 6px;
+      font-size: 12px; color: var(--subtle);
+      font-family: 'Syne', sans-serif; font-weight: 600;
+    }
+    .trust-dot { width: 5px; height: 5px; border-radius: 50%; background: var(--teal); }
+
     /* ===== MODAL ===== */
     .modal-backdrop {
       position: fixed; inset: 0; z-index: 200;
-      background: rgba(8,23,46,0.85); backdrop-filter: blur(12px);
+      background: rgba(15,23,36,0.45); backdrop-filter: blur(10px);
       display: flex; align-items: center; justify-content: center; padding: 24px;
       opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
     }
     .modal-backdrop.active { opacity: 1; pointer-events: all; }
     .modal {
-      background: var(--navy2); border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 24px; padding: 40px; width: 100%; max-width: 480px;
-      transform: scale(0.94) translateY(20px);
+      background: var(--white); border: 1.5px solid var(--border);
+      border-radius: 24px; padding: 36px; width: 100%; max-width: 480px;
+      transform: scale(0.95) translateY(18px);
       transition: transform 0.35s cubic-bezier(.22,.68,0,1.2);
-      position: relative;
+      position: relative; box-shadow: 0 32px 80px rgba(0,0,0,0.12);
     }
     .modal-backdrop.active .modal { transform: scale(1) translateY(0); }
- 
+
     .modal-close {
-      position: absolute; top: 18px; right: 20px;
-      background: rgba(255,255,255,0.06); border: none; cursor: pointer;
+      position: absolute; top: 16px; right: 16px;
+      background: var(--light); border: 1px solid var(--border); cursor: pointer;
       width: 32px; height: 32px; border-radius: 8px;
       display: flex; align-items: center; justify-content: center;
-      color: rgba(242,232,213,0.5); transition: background 0.2s;
-      font-size: 18px;
+      color: var(--muted); transition: background 0.2s; font-size: 16px;
     }
-    .modal-close:hover { background: rgba(255,255,255,0.12); color: var(--sand); }
- 
+    .modal-close:hover { background: var(--border); color: var(--text); }
+
     .modal-icon {
-      width: 60px; height: 60px; border-radius: 16px;
+      width: 56px; height: 56px; border-radius: 14px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 28px; margin-bottom: 20px;
+      font-size: 24px; margin-bottom: 18px;
     }
     .modal h2 {
       font-family: 'Syne', sans-serif; font-weight: 800;
-      font-size: 28px; color: var(--sand); margin-bottom: 6px;
+      font-size: 26px; color: var(--text); margin-bottom: 5px;
     }
-    .modal .modal-desc {
-      font-size: 14px; color: rgba(242,232,213,0.5); margin-bottom: 28px; line-height: 1.6;
+    .modal-desc {
+      font-size: 14px; color: var(--muted); margin-bottom: 24px; line-height: 1.65;
     }
- 
-    .form-group { margin-bottom: 16px; }
+
+    .form-group { margin-bottom: 14px; }
     .form-label {
-      display: block; font-size: 12px; font-family: 'Syne', sans-serif; font-weight: 600;
-      color: rgba(242,232,213,0.5); text-transform: uppercase; letter-spacing: 0.08em;
-      margin-bottom: 8px;
+      display: block; font-size: 11.5px; font-family: 'Syne', sans-serif; font-weight: 700;
+      color: var(--muted); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 7px;
     }
     .form-input, .form-select {
-      width: 100%; padding: 12px 16px; border-radius: 10px; font-size: 14px;
-      background: rgba(255,255,255,0.05); border: 1px solid rgba(255,255,255,0.1);
-      color: var(--sand); outline: none; font-family: 'DM Sans', sans-serif;
-      transition: border-color 0.2s;
+      width: 100%; padding: 11px 14px; border-radius: 10px; font-size: 14px;
+      background: var(--white); border: 1.5px solid var(--border);
+      color: var(--text); outline: none; font-family: 'DM Sans', sans-serif;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .form-input::placeholder { color: rgba(242,232,213,0.25); }
-    .form-input:focus, .form-select:focus { border-color: rgba(232,168,56,0.5); }
-    .form-select { appearance: none; cursor: pointer; }
-    .form-select option { background: var(--navy2); }
- 
+    .form-input::placeholder { color: var(--subtle); }
+    .form-input:focus, .form-select:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(13,110,110,0.08);
+    }
+    .form-select {
+      appearance: none; cursor: pointer;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='7' viewBox='0 0 12 7'%3E%3Cpath stroke='%236b7280' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+      background-repeat: no-repeat; background-position: right 14px center;
+    }
+
     .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
- 
-    .divider {
-      display: flex; align-items: center; gap: 12px;
-      font-size: 12px; color: rgba(242,232,213,0.25); margin: 20px 0;
-    }
-    .divider::before, .divider::after {
-      content: ''; flex: 1; height: 1px; background: rgba(255,255,255,0.08);
-    }
- 
+
     .btn-full {
-      width: 100%; padding: 14px; border-radius: 12px; border: none; cursor: pointer;
-      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 15px; color: #fff;
-      transition: opacity 0.2s, transform 0.2s;
+      width: 100%; padding: 13px; border-radius: 12px; border: none; cursor: pointer;
+      font-family: 'Syne', sans-serif; font-weight: 700; font-size: 14px; color: #fff;
+      transition: opacity 0.2s, transform 0.2s; margin-top: 4px;
     }
     .btn-full:hover { opacity: 0.9; transform: scale(1.01); }
- 
+
     .modal-footer {
-      text-align: center; margin-top: 16px; font-size: 13px; color: rgba(242,232,213,0.35);
+      text-align: center; margin-top: 14px; font-size: 13px; color: var(--subtle);
     }
-    .modal-footer a { color: var(--gold); text-decoration: none; }
+    .modal-footer a { color: var(--teal); text-decoration: none; font-weight: 500; }
     .modal-footer a:hover { text-decoration: underline; }
- 
-    /* type-pills for job seeker */
+
+    /* type-pills */
     .type-pills { display: flex; gap: 10px; margin-top: 8px; }
     .type-pill {
-      flex: 1; padding: 10px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
-      background: rgba(255,255,255,0.04); text-align: center; cursor: pointer;
-      transition: all 0.2s;
+      flex: 1; padding: 12px 8px; border-radius: 12px;
+      border: 1.5px solid var(--border); background: var(--white);
+      text-align: center; cursor: pointer; transition: all 0.2s;
     }
-    .type-pill .pill-icon { font-size: 20px; margin-bottom: 4px; }
-    .type-pill .pill-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: rgba(242,232,213,0.5); }
-    .type-pill.selected { border-color: rgba(196,92,53,0.5); background: rgba(196,92,53,0.12); }
-    .type-pill.selected .pill-label { color: #e08a68; }
- 
-    /* ===== TRUST STRIP ===== */
-    .trust-strip {
-      position: relative; z-index: 2;
-      display: flex; align-items: center; justify-content: center;
-      gap: 32px; margin-top: 52px; flex-wrap: wrap;
-    }
-    .trust-item {
-      display: flex; align-items: center; gap: 8px;
-      font-size: 12px; color: rgba(242,232,213,0.35); font-family: 'Syne', sans-serif; font-weight: 600;
-    }
-    .trust-dot { width: 5px; height: 5px; border-radius: 50%; background: rgba(232,168,56,0.5); }
- 
-    /* ===== STATS ===== */
-    .stats-row {
-      display: flex; gap: 0; width: 100%; max-width: 860px;
-      margin: 0 auto; margin-top: 60px; position: relative; z-index: 2;
-      border-radius: 16px; overflow: hidden;
-      border: 1px solid rgba(255,255,255,0.07);
-      background: rgba(255,255,255,0.025);
-    }
-    .stat { flex: 1; padding: 22px 20px; text-align: center; border-right: 1px solid rgba(255,255,255,0.07); }
-    .stat:last-child { border-right: none; }
-    .stat-num { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 26px; color: var(--gold); }
-    .stat-lbl { font-size: 11px; color: rgba(242,232,213,0.4); margin-top: 3px; font-family: 'Syne', sans-serif; font-weight: 600; text-transform: uppercase; letter-spacing: 0.06em; }
- 
+    .type-pill .pill-icon { font-size: 18px; margin-bottom: 4px; }
+    .type-pill .pill-label { font-family: 'Syne', sans-serif; font-size: 11px; font-weight: 700; color: var(--muted); }
+    .type-pill:hover { border-color: rgba(196,92,53,0.4); background: var(--terra-light); }
+    .type-pill.selected { border-color: var(--terra); background: var(--terra-light); }
+    .type-pill.selected .pill-label { color: var(--terra); }
+
     /* ===== RESPONSIVE ===== */
     @media (max-width: 768px) {
       nav { padding: 14px 20px; }
       .nav-right .btn-ghost { display: none; }
       .roles-grid { grid-template-columns: 1fr; max-width: 420px; }
-      .stats-row { flex-direction: column; }
-      .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.07); }
-      .stat:last-child { border-bottom: none; }
+      .stats-row { display: grid; grid-template-columns: 1fr 1fr; }
+      .stat:nth-child(2) { border-right: none; }
+      .stat { border-bottom: 1px solid var(--border); }
+      .stat:nth-child(3), .stat:nth-child(4) { border-bottom: none; }
       .form-row { grid-template-columns: 1fr; }
     }
- 
+
     /* ===== ANIMATIONS ===== */
-    @keyframes fadeUp { from { opacity: 0; transform: translateY(24px); } to { opacity: 1; transform: translateY(0); } }
-    .fade-up { opacity: 0; animation: fadeUp 0.6s ease forwards; }
-    .delay-1 { animation-delay: 0.1s; }
-    .delay-2 { animation-delay: 0.25s; }
-    .delay-3 { animation-delay: 0.4s; }
-    .delay-4 { animation-delay: 0.55s; }
-    .delay-5 { animation-delay: 0.7s; }
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+    .fade-up { opacity: 0; animation: fadeUp 0.65s ease forwards; }
+    .d1 { animation-delay: 0.05s; } .d2 { animation-delay: 0.18s; }
+    .d3 { animation-delay: 0.32s; } .d4 { animation-delay: 0.46s; }
+    .d5 { animation-delay: 0.6s;  } .d6 { animation-delay: 0.72s; }
   </style>
 </head>
 <body>
- 
+
   <!-- NAV -->
   <nav>
     <a href="#" class="logo">
@@ -368,32 +346,30 @@
       <a href="#" class="btn-pill">Get Started</a>
     </div>
   </nav>
- 
+
   <!-- HERO -->
   <section class="hero">
     <div class="dot-grid"></div>
-    <div class="orb orb-1"></div>
-    <div class="orb orb-2"></div>
-    <div class="orb orb-3"></div>
- 
+    <div class="blob blob-1"></div>
+    <div class="blob blob-2"></div>
+    <div class="blob blob-3"></div>
+
     <div class="hero-content">
-      <div class="eyebrow fade-up delay-1">
+      <div class="eyebrow fade-up d1">
         <div class="dot"></div>
-        Botswana's Career & Business Hub
+        Botswana's Career &amp; Business Hub
       </div>
- 
-      <h1 class="fade-up delay-2">
-        Who Are <span class="accent">You</span><br/>on GradBridge?
+      <h1 class="fade-up d2">
+        Who Are <span class="accent-teal">You</span><br/>on GradBridge?
       </h1>
-      <p class="fade-up delay-3">
+      <p class="fade-up d3">
         Tell us who you are and we'll personalise your entire experience — from finding talent to landing your dream role.
       </p>
     </div>
- 
+
     <!-- ROLE CARDS -->
-    <div class="roles-grid fade-up delay-4">
- 
-      <!-- BUSINESS -->
+    <div class="roles-grid fade-up d4">
+
       <a href="#" class="role-card role-business" onclick="openModal('business'); return false;">
         <div class="role-icon icon-business">🏢</div>
         <div class="role-title">I'm a Business</div>
@@ -403,12 +379,9 @@
           <span class="tag tag-teal">Training</span>
           <span class="tag tag-teal">Scholarships</span>
         </div>
-        <span class="role-cta cta-business">
-          Register Business <span class="arrow">→</span>
-        </span>
+        <span class="role-cta cta-business">Register Business <span class="arrow">→</span></span>
       </a>
- 
-      <!-- STUDENT -->
+
       <a href="#" class="role-card role-student" onclick="openModal('student'); return false;">
         <div class="role-icon icon-student">🎓</div>
         <div class="role-title">I'm a Student</div>
@@ -418,65 +391,47 @@
           <span class="tag tag-gold">Attachment</span>
           <span class="tag tag-gold">Scholarships</span>
         </div>
-        <span class="role-cta cta-student">
-          Create Student Profile <span class="arrow">→</span>
-        </span>
+        <span class="role-cta cta-student">Create Student Profile <span class="arrow">→</span></span>
       </a>
- 
-      <!-- JOB SEEKER -->
+
       <a href="#" class="role-card role-jobseeker" onclick="openModal('jobseeker'); return false;">
         <div class="role-icon icon-job">💼</div>
         <div class="role-title">I'm Looking for Work</div>
-        <p class="role-sub">Browse permanent roles or internship opportunities, apply directly, and get matched with employers looking for your skills.</p>
+        <p class="role-sub">Browse permanent roles or internship opportunities, apply directly, and get matched with employers seeking your skills.</p>
         <div class="role-tags">
           <span class="tag tag-terra">Permanent Jobs</span>
           <span class="tag tag-terra">Internships</span>
         </div>
-        <span class="role-cta cta-job">
-          Find Opportunities <span class="arrow">→</span>
-        </span>
+        <span class="role-cta cta-job">Find Opportunities <span class="arrow">→</span></span>
       </a>
- 
+
     </div>
- 
+
     <!-- STATS -->
-    <div class="stats-row fade-up delay-5">
-      <div class="stat">
-        <div class="stat-num">500+</div>
-        <div class="stat-lbl">Companies</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">12,000+</div>
-        <div class="stat-lbl">Registered Users</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">3,400+</div>
-        <div class="stat-lbl">Active Listings</div>
-      </div>
-      <div class="stat">
-        <div class="stat-num">800+</div>
-        <div class="stat-lbl">Scholarships Posted</div>
-      </div>
+    <div class="stats-row fade-up d5">
+      <div class="stat"><div class="stat-num">500+</div><div class="stat-lbl">Companies</div></div>
+      <div class="stat"><div class="stat-num">12,000+</div><div class="stat-lbl">Registered Users</div></div>
+      <div class="stat"><div class="stat-num">3,400+</div><div class="stat-lbl">Active Listings</div></div>
+      <div class="stat"><div class="stat-num">800+</div><div class="stat-lbl">Scholarships Posted</div></div>
     </div>
- 
+
     <!-- TRUST -->
-    <div class="trust-strip">
-      <span class="trust-item"><div class="trust-dot"></div> 100% Free to Join</span>
-      <span class="trust-item"><div class="trust-dot"></div> Botswana-Focused</span>
-      <span class="trust-item"><div class="trust-dot"></div> Verified Companies</span>
-      <span class="trust-item"><div class="trust-dot"></div> Direct Applications</span>
+    <div class="trust-strip fade-up d6">
+      <span class="trust-item"><div class="trust-dot"></div>100% Free to Join</span>
+      <span class="trust-item"><div class="trust-dot"></div>Botswana-Focused</span>
+      <span class="trust-item"><div class="trust-dot"></div>Verified Companies</span>
+      <span class="trust-item"><div class="trust-dot"></div>Direct Applications</span>
     </div>
   </section>
- 
- 
-  <!-- ============ MODAL: BUSINESS ============ -->
+
+
+  <!-- ===== MODAL: BUSINESS ===== -->
   <div class="modal-backdrop" id="modal-business">
     <div class="modal">
       <button class="modal-close" onclick="closeModal('business')">✕</button>
-      <div class="modal-icon icon-business" style="background:rgba(13,110,110,0.2); border:1px solid rgba(13,110,110,0.4);">🏢</div>
+      <div class="modal-icon icon-business">🏢</div>
       <h2>Register Your Business</h2>
       <p class="modal-desc">Set up your company profile to start posting jobs, training programmes, and scholarships.</p>
- 
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Company Name</label>
@@ -512,23 +467,18 @@
           <input class="form-input" type="password" placeholder="••••••••" />
         </div>
       </div>
- 
-      <button class="btn-full" style="background: linear-gradient(135deg, var(--teal), #0a5555);">
-        Create Business Account →
-      </button>
+      <button class="btn-full" style="background: linear-gradient(135deg, var(--teal), #0a5555);">Create Business Account →</button>
       <div class="modal-footer">Already have an account? <a href="#">Sign in</a></div>
     </div>
   </div>
- 
- 
-  <!-- ============ MODAL: STUDENT ============ -->
+
+  <!-- ===== MODAL: STUDENT ===== -->
   <div class="modal-backdrop" id="modal-student">
     <div class="modal">
       <button class="modal-close" onclick="closeModal('student')">✕</button>
-      <div class="modal-icon icon-student" style="background:rgba(232,168,56,0.15); border:1px solid rgba(232,168,56,0.4);">🎓</div>
+      <div class="modal-icon icon-student">🎓</div>
       <h2>Student Profile</h2>
       <p class="modal-desc">Create your profile to discover internships, attachment programmes, and scholarships across Botswana.</p>
- 
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">First Name</label>
@@ -565,23 +515,18 @@
         <label class="form-label">Password</label>
         <input class="form-input" type="password" placeholder="••••••••" />
       </div>
- 
-      <button class="btn-full" style="background: linear-gradient(135deg, var(--gold), #c98420);">
-        Create Student Profile →
-      </button>
+      <button class="btn-full" style="background: linear-gradient(135deg, #e5a010, #c07d08);">Create Student Profile →</button>
       <div class="modal-footer">Already have an account? <a href="#">Sign in</a></div>
     </div>
   </div>
- 
- 
-  <!-- ============ MODAL: JOB SEEKER ============ -->
+
+  <!-- ===== MODAL: JOB SEEKER ===== -->
   <div class="modal-backdrop" id="modal-jobseeker">
     <div class="modal">
       <button class="modal-close" onclick="closeModal('jobseeker')">✕</button>
-      <div class="modal-icon icon-job" style="background:rgba(196,92,53,0.18); border:1px solid rgba(196,92,53,0.4);">💼</div>
+      <div class="modal-icon icon-job">💼</div>
       <h2>Find Opportunities</h2>
       <p class="modal-desc">Tell us what type of work you're looking for and we'll match you with the right listings.</p>
- 
       <div class="form-group">
         <label class="form-label">What are you looking for?</label>
         <div class="type-pills">
@@ -591,7 +536,7 @@
           </div>
           <div class="type-pill" id="pill-perm" onclick="selectPill('perm')">
             <div class="pill-icon">🏆</div>
-            <div class="pill-label">Permanent Role</div>
+            <div class="pill-label">Permanent</div>
           </div>
           <div class="type-pill" id="pill-both" onclick="selectPill('both')">
             <div class="pill-icon">🌐</div>
@@ -599,7 +544,6 @@
           </div>
         </div>
       </div>
- 
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">First Name</label>
@@ -634,15 +578,11 @@
         <label class="form-label">Password</label>
         <input class="form-input" type="password" placeholder="••••••••" />
       </div>
- 
-      <button class="btn-full" style="background: linear-gradient(135deg, var(--terra), #9c3e20);">
-        Start Job Hunting →
-      </button>
+      <button class="btn-full" style="background: linear-gradient(135deg, var(--terra), #9c3e20);">Start Job Hunting →</button>
       <div class="modal-footer">Already have an account? <a href="#">Sign in</a></div>
     </div>
   </div>
- 
- 
+
   <script>
     function openModal(type) {
       document.getElementById('modal-' + type).classList.add('active');
@@ -652,26 +592,18 @@
       document.getElementById('modal-' + type).classList.remove('active');
       document.body.style.overflow = '';
     }
-    // Close on backdrop click
-    document.querySelectorAll('.modal-backdrop').forEach(backdrop => {
-      backdrop.addEventListener('click', function(e) {
-        if (e.target === this) {
-          this.classList.remove('active');
-          document.body.style.overflow = '';
-        }
+    document.querySelectorAll('.modal-backdrop').forEach(b => {
+      b.addEventListener('click', function(e) {
+        if (e.target === this) { this.classList.remove('active'); document.body.style.overflow = ''; }
       });
     });
-    // Close on Escape
     document.addEventListener('keydown', e => {
       if (e.key === 'Escape') {
         document.querySelectorAll('.modal-backdrop.active').forEach(m => {
-          m.classList.remove('active');
-          document.body.style.overflow = '';
+          m.classList.remove('active'); document.body.style.overflow = '';
         });
       }
     });
- 
-    // Job type pill selection
     function selectPill(id) {
       document.querySelectorAll('.type-pill').forEach(p => p.classList.remove('selected'));
       document.getElementById('pill-' + id).classList.add('selected');
