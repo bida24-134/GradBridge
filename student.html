@@ -1,1 +1,749 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GradBridge — Student Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    /* ---- Student accent colour: Teal/Navy ---- */
+    .avatar-student { background: linear-gradient(135deg, #0D7070, #1E6FD9); }
+    .stat-icon-1 { background: var(--teal-light); }
+    .stat-icon-2 { background: var(--blue-light); }
+    .stat-icon-3 { background: var(--gold-light); }
+    .stat-icon-4 { background: var(--green-light); }
+    .nav-active-color::before { background: #5ecece !important; }
+    .scholarship-card {
+      background: var(--white); border: 1px solid var(--border);
+      border-radius: var(--r-lg); padding: 18px;
+      box-shadow: var(--shadow-sm);
+      transition: box-shadow var(--t-fast), transform var(--t-fast);
+    }
+    .scholarship-card:hover { box-shadow: var(--shadow-md); transform: translateY(-2px); }
+    .scholarship-deadline {
+      display: flex; align-items: center; gap: 5px;
+      font-size: 11.5px; font-weight: 600; font-family: 'Syne', sans-serif;
+      color: var(--terra);
+      background: var(--terra-light); border-radius: var(--r-pill);
+      padding: 3px 9px; width: fit-content; margin-bottom: 10px;
+    }
+    .course-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; }
+    .deadline-badge {
+      font-size: 11px; font-weight: 700; font-family: 'Syne', sans-serif;
+      color: var(--terra); background: var(--terra-light);
+      padding: 2px 8px; border-radius: var(--r-pill);
+    }
+    .app-status-pill {
+      font-size: 11px; font-weight: 700; font-family: 'Syne', sans-serif;
+      padding: 3px 10px; border-radius: var(--r-pill);
+    }
+    .status-pending   { background: var(--gold-light); color: var(--gold); }
+    .status-review    { background: var(--blue-light); color: var(--blue); }
+    .status-accepted  { background: var(--green-light); color: var(--green); }
+    .status-rejected  { background: var(--rose-light); color: var(--rose); }
+    .profile-item {
+      display: flex; justify-content: space-between; align-items: center;
+      padding: 12px 0; border-bottom: 1px solid var(--border-light);
+      font-size: 13.5px;
+    }
+    .profile-item:last-child { border-bottom: none; }
+    .profile-item-label { color: var(--text-muted); font-size: 12px; margin-bottom: 2px; }
+    .profile-item-value { font-weight: 500; color: var(--text-primary); }
+  </style>
+</head>
+<body>
+<div class="layout">
 
+  <!-- ===== SIDEBAR ===== -->
+  <aside class="sidebar" id="sidebar">
+    <a href="gradbridge-home.html" class="sidebar-brand">
+      <div class="sidebar-brand-icon">G</div>
+      <span class="sidebar-brand-name">GradBridge</span>
+    </a>
+
+    <nav class="sidebar-nav">
+      <div class="sidebar-section-label" style="padding: 18px 8px 6px; display:block; font-family:'Syne',sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.4);">Main</div>
+      <div class="nav-item active" onclick="showSection('dashboard')">
+        <span class="nav-item-icon">🏠</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="showSection('internships')">
+        <span class="nav-item-icon">🔗</span> Internships
+        <span class="nav-badge">12</span>
+      </div>
+      <div class="nav-item" onclick="showSection('attachment')">
+        <span class="nav-item-icon">📎</span> Attachment
+      </div>
+      <div class="nav-item" onclick="showSection('scholarships')">
+        <span class="nav-item-icon">🎓</span> Scholarships
+        <span class="nav-badge">5</span>
+      </div>
+      <div class="nav-item" onclick="showSection('courses')">
+        <span class="nav-item-icon">📚</span> Training Courses
+      </div>
+
+      <div style="height:1px; background:rgba(255,255,255,0.07); margin:14px 0;"></div>
+      <div style="padding: 0 8px 6px; font-family:'Syne',sans-serif; font-size:9.5px; font-weight:700; text-transform:uppercase; letter-spacing:0.1em; color:rgba(255,255,255,0.4);">My Activity</div>
+
+      <div class="nav-item" onclick="showSection('applications')">
+        <span class="nav-item-icon">📋</span> My Applications
+      </div>
+      <div class="nav-item" onclick="showSection('saved')">
+        <span class="nav-item-icon">🔖</span> Saved
+      </div>
+      <div class="nav-item" onclick="showSection('profile')">
+        <span class="nav-item-icon">👤</span> My Profile
+      </div>
+    </nav>
+
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar avatar-student">TM</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Tshegofatso M.</div>
+          <div class="sidebar-user-role">Student · UB</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ===== TOPBAR ===== -->
+  <header class="topbar">
+    <span class="topbar-title" id="topbar-title">Dashboard</span>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span style="color:var(--text-muted);font-size:14px;">🔍</span>
+        <input type="text" placeholder="Search opportunities…" />
+      </div>
+      <button class="topbar-icon-btn" title="Notifications">
+        🔔
+        <span class="notif-dot"></span>
+      </button>
+      <div class="topbar-avatar avatar-student">TM</div>
+    </div>
+  </header>
+
+  <!-- ===== MAIN ===== -->
+  <main class="main">
+
+    <!-- ========== DASHBOARD ========== -->
+    <section class="page-section active" id="sec-dashboard">
+      <div class="page-header fade-up d0">
+        <h2>Good morning, Tshegofatso 👋</h2>
+        <p>Here's what's happening with your GradBridge profile today.</p>
+      </div>
+
+      <!-- Stats -->
+      <div class="stats-grid fade-up d1">
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon stat-icon-1">🔗</div>
+            <span class="stat-card-badge badge-new">+3 new</span>
+          </div>
+          <div class="stat-card-num">12</div>
+          <div class="stat-card-label">Open Internships</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon stat-icon-2">📋</div>
+            <span class="stat-card-badge badge-up">Active</span>
+          </div>
+          <div class="stat-card-num">4</div>
+          <div class="stat-card-label">Applications Sent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon stat-icon-3">🎓</div>
+            <span class="stat-card-badge badge-new">2 closing</span>
+          </div>
+          <div class="stat-card-num">5</div>
+          <div class="stat-card-label">Scholarships Available</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top">
+            <div class="stat-card-icon stat-icon-4">📚</div>
+          </div>
+          <div class="stat-card-num">2</div>
+          <div class="stat-card-label">Courses Enrolled</div>
+        </div>
+      </div>
+
+      <div class="two-col-3-1 fade-up d2">
+        <!-- Recent Internships -->
+        <div class="card">
+          <div class="card-header">
+            <span class="card-title">Recommended Internships</span>
+            <a class="card-link" onclick="showSection('internships')">View all →</a>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">🏦</div>
+            <div class="listing-info">
+              <div class="listing-title">IT Graduate Intern — First National Bank</div>
+              <div class="listing-meta">
+                <span>Gaborone</span><span class="listing-meta-sep">·</span>
+                <span>3 months</span><span class="listing-meta-sep">·</span>
+                <span class="tag tag-teal">IT</span>
+              </div>
+            </div>
+            <div class="listing-actions">
+              <span class="deadline-badge">14 days left</span>
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('IT Graduate Intern','First National Bank')">Apply</button>
+            </div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">💎</div>
+            <div class="listing-info">
+              <div class="listing-title">Engineering Attachment — Debswana</div>
+              <div class="listing-meta">
+                <span>Jwaneng</span><span class="listing-meta-sep">·</span>
+                <span>6 months</span><span class="listing-meta-sep">·</span>
+                <span class="tag tag-gold">Engineering</span>
+              </div>
+            </div>
+            <div class="listing-actions">
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('Engineering Attachment','Debswana')">Apply</button>
+            </div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">📡</div>
+            <div class="listing-info">
+              <div class="listing-title">Software Intern — Mascom Wireless</div>
+              <div class="listing-meta">
+                <span>Gaborone</span><span class="listing-meta-sep">·</span>
+                <span>4 months</span><span class="listing-meta-sep">·</span>
+                <span class="tag tag-blue">Tech</span>
+              </div>
+            </div>
+            <div class="listing-actions">
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('Software Intern','Mascom Wireless')">Apply</button>
+            </div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">🏥</div>
+            <div class="listing-info">
+              <div class="listing-title">Health Data Intern — Ministry of Health</div>
+              <div class="listing-meta">
+                <span>Gaborone</span><span class="listing-meta-sep">·</span>
+                <span>3 months</span><span class="listing-meta-sep">·</span>
+                <span class="tag tag-green">Healthcare</span>
+              </div>
+            </div>
+            <div class="listing-actions">
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('Health Data Intern','Ministry of Health')">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Profile + Notifications -->
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="profile-completion">
+            <div class="profile-completion-pct">72%</div>
+            <div class="profile-completion-label">Profile Complete</div>
+            <div class="profile-completion-bar">
+              <div class="profile-completion-fill" style="width:72%"></div>
+            </div>
+            <button class="btn btn-sm" style="margin-top:14px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25)" onclick="showSection('profile')">Complete Profile</button>
+          </div>
+
+          <div class="card">
+            <div class="card-header"><span class="card-title">Notifications</span></div>
+            <div class="notif-item">
+              <div class="notif-dot-icon" style="background:var(--teal)"></div>
+              <div>
+                <div class="notif-text">Debswana viewed your profile</div>
+                <div class="notif-time">2 hours ago</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot-icon" style="background:var(--gold)"></div>
+              <div>
+                <div class="notif-text">Letshego Scholarship closes in 3 days</div>
+                <div class="notif-time">Yesterday</div>
+              </div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot-icon" style="background:var(--blue)"></div>
+              <div>
+                <div class="notif-text">New course: Excel for Finance is live</div>
+                <div class="notif-time">2 days ago</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Upcoming Deadlines -->
+      <div class="card fade-up d3">
+        <div class="card-header"><span class="card-title">Upcoming Deadlines</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:12px;">
+          <div style="padding:14px;background:var(--terra-light);border:1px solid rgba(196,82,42,0.2);border-radius:var(--r-lg);">
+            <div style="font-size:11px;font-weight:700;font-family:'Syne',sans-serif;color:var(--terra);margin-bottom:4px;">⏰ 3 DAYS LEFT</div>
+            <div style="font-weight:600;font-size:13.5px;">Letshego STEM Scholarship</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Closes 21 March 2025</div>
+          </div>
+          <div style="padding:14px;background:var(--gold-light);border:1px solid rgba(201,138,10,0.2);border-radius:var(--r-lg);">
+            <div style="font-size:11px;font-weight:700;font-family:'Syne',sans-serif;color:var(--gold);margin-bottom:4px;">⏰ 14 DAYS LEFT</div>
+            <div style="font-weight:600;font-size:13.5px;">FNB IT Graduate Internship</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Closes 31 March 2025</div>
+          </div>
+          <div style="padding:14px;background:var(--blue-light);border:1px solid rgba(30,111,217,0.2);border-radius:var(--r-lg);">
+            <div style="font-size:11px;font-weight:700;font-family:'Syne',sans-serif;color:var(--blue);margin-bottom:4px;">⏰ 21 DAYS LEFT</div>
+            <div style="font-weight:600;font-size:13.5px;">BCL Engineering Attachment</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px;">Closes 7 April 2025</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== INTERNSHIPS ========== -->
+    <section class="page-section" id="sec-internships">
+      <div class="page-header fade-up d0">
+        <h2>Internship Opportunities</h2>
+        <p>Browse and apply to verified internships from companies across Botswana.</p>
+      </div>
+      <div class="filters-bar fade-up d1">
+        <div class="search-input-bar">
+          <span style="color:var(--text-muted)">🔍</span>
+          <input type="text" placeholder="Search internships…" />
+        </div>
+        <select class="filter-select"><option>All Industries</option><option>Technology</option><option>Finance</option><option>Engineering</option><option>Healthcare</option><option>Marketing</option></select>
+        <select class="filter-select"><option>All Locations</option><option>Gaborone</option><option>Francistown</option><option>Jwaneng</option><option>Lobatse</option></select>
+        <select class="filter-select"><option>Duration</option><option>1–3 months</option><option>3–6 months</option><option>6+ months</option></select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;" class="fade-up d2">
+        <!-- Each card -->
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">🏦</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">IT Graduate Intern</span>
+              <span class="tag tag-teal">Technology</span>
+              <span class="tag tag-blue">Internship</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">First National Bank · Gaborone · 3 months · Stipend: P2,500/month</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Support the IT department in day-to-day operations, assist with network maintenance, and gain exposure to banking systems. Ideal for CS or IT students.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);margin-right:4px;">Skills needed:</span>
+              <span class="skill-chip matched">Python</span>
+              <span class="skill-chip matched">SQL</span>
+              <span class="skill-chip">Networking</span>
+              <span class="skill-chip missing">CCNA</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <span class="deadline-badge">14 days left</span>
+            <button class="btn btn-navy" onclick="openApplyModal('IT Graduate Intern','First National Bank')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">💎</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Engineering Attachment</span>
+              <span class="tag tag-gold">Engineering</span>
+              <span class="tag tag-blue">Attachment</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Debswana Diamond Company · Jwaneng · 6 months · Stipend: P3,500/month</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Work alongside our engineering team at the Jwaneng mine, supporting mechanical and electrical maintenance operations. Open to 3rd and 4th year engineering students.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);margin-right:4px;">Skills needed:</span>
+              <span class="skill-chip">AutoCAD</span>
+              <span class="skill-chip matched">Mathematics</span>
+              <span class="skill-chip missing">PLC Programming</span>
+              <span class="skill-chip matched">Report Writing</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Engineering Attachment','Debswana')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">📡</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Software Development Intern</span>
+              <span class="tag tag-teal">Technology</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Mascom Wireless · Gaborone · 4 months · Stipend: P3,000/month</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Join our software team to help build and maintain internal tools, APIs, and customer-facing applications used by thousands of Batswana daily.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span class="skill-chip matched">JavaScript</span>
+              <span class="skill-chip matched">React</span>
+              <span class="skill-chip">Node.js</span>
+              <span class="skill-chip missing">Docker</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Software Development Intern','Mascom Wireless')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">🏥</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Health Informatics Intern</span>
+              <span class="tag tag-green">Healthcare</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Ministry of Health · Gaborone · 3 months · Unpaid</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Assist with data collection, health records management, and basic analytics using government health systems. Suitable for Health IT or Data Science students.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span class="skill-chip matched">Data Analysis</span>
+              <span class="skill-chip">Excel</span>
+              <span class="skill-chip missing">DHIS2</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Health Informatics Intern','Ministry of Health')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== ATTACHMENT ========== -->
+    <section class="page-section" id="sec-attachment">
+      <div class="page-header fade-up d0">
+        <h2>Attachment Opportunities</h2>
+        <p>University and college-required attachment placements. Apply directly through GradBridge.</p>
+      </div>
+      <div class="filters-bar fade-up d1">
+        <div class="search-input-bar"><span>🔍</span><input type="text" placeholder="Search attachment…" /></div>
+        <select class="filter-select"><option>All Fields</option><option>Engineering</option><option>Business</option><option>Science</option><option>Social Sciences</option></select>
+        <select class="filter-select"><option>All Locations</option><option>Gaborone</option><option>Francistown</option></select>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;" class="fade-up d2">
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">⚡</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Electrical Engineering Attachment</span>
+              <span class="tag tag-gold">Engineering</span>
+              <span class="tag tag-green">UB Credit</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">BPC (Botswana Power Corporation) · Gaborone · 5 months · Stipend included</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Work within BPC's generation and distribution teams. Students will gain practical skills in power systems, safety protocols, and fault diagnosis. Mentor assigned from day one.</div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">📋 Requires: University attachment letter · Official transcript</div>
+          </div>
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            <button class="btn btn-navy" onclick="openApplyModal('Electrical Engineering Attachment','BPC')">Request Placement</button>
+            <button class="btn btn-outline btn-sm">Download Info Pack</button>
+          </div>
+        </div>
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">🏛️</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Public Administration Attachment</span>
+              <span class="tag tag-blue">Social Sciences</span>
+              <span class="tag tag-green">UB Credit</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Ministry of Finance · Gaborone · 4 months · Unpaid</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Gain first-hand experience in public sector budgeting, policy drafting, and government reporting. Open to Social Sciences, Law, and Business students in their final two years.</div>
+            <div style="font-size:12px;font-weight:600;color:var(--text-muted);margin-bottom:8px;">📋 Requires: University attachment letter · Cover letter</div>
+          </div>
+          <div style="flex-shrink:0;display:flex;flex-direction:column;gap:8px;align-items:flex-end;">
+            <button class="btn btn-navy" onclick="openApplyModal('Public Administration Attachment','Ministry of Finance')">Request Placement</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SCHOLARSHIPS ========== -->
+    <section class="page-section" id="sec-scholarships">
+      <div class="page-header fade-up d0">
+        <h2>Scholarships & Funding</h2>
+        <p>Education funding opportunities from companies, foundations and government.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:16px;" class="fade-up d1">
+        <div class="scholarship-card">
+          <div style="font-size:28px;margin-bottom:10px;">🎓</div>
+          <span class="scholarship-deadline">⏰ Closes 21 March</span>
+          <div class="card-title" style="margin-bottom:6px;">Letshego STEM Scholarship</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">Letshego Financial Services · Full Tuition + Living Allowance</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">Supports Batswana pursuing STEM degrees. Covers full tuition fees, accommodation allowance of P1,500/month, and mentorship from Letshego professionals.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <span class="tag tag-teal">STEM</span><span class="tag tag-blue">Full Bursary</span><span class="tag tag-gold">Open</span>
+          </div>
+          <button class="btn btn-navy btn-full" onclick="openApplyModal('Letshego STEM Scholarship','Letshego Financial Services')">Apply Now</button>
+        </div>
+        <div class="scholarship-card">
+          <div style="font-size:28px;margin-bottom:10px;">💼</div>
+          <span class="scholarship-deadline" style="background:var(--gold-light);color:var(--gold);">⏰ Closes 5 April</span>
+          <div class="card-title" style="margin-bottom:6px;">ABSA Young Leaders Bursary</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">ABSA Bank Botswana · Partial (up to P30,000/year)</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">For undergraduate students in Accounting, Finance, or Economics at accredited Botswana institutions. Includes mandatory vacation work placement at ABSA.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <span class="tag tag-gold">Finance</span><span class="tag tag-blue">Partial Bursary</span>
+          </div>
+          <button class="btn btn-navy btn-full" onclick="openApplyModal('ABSA Young Leaders Bursary','ABSA Bank')">Apply Now</button>
+        </div>
+        <div class="scholarship-card">
+          <div style="font-size:28px;margin-bottom:10px;">⚕️</div>
+          <span class="scholarship-deadline" style="background:var(--green-light);color:var(--green);">⏰ Closes 30 April</span>
+          <div class="card-title" style="margin-bottom:6px;">Botswana Medical Foundation Grant</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">BMF · P25,000 one-time grant</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">Supports medical and nursing students in financial need. Priority given to students from rural areas. Academic achievement minimum: 60% average.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <span class="tag tag-green">Healthcare</span><span class="tag tag-blue">Grant</span>
+          </div>
+          <button class="btn btn-navy btn-full" onclick="openApplyModal('BMF Healthcare Grant','Botswana Medical Foundation')">Apply Now</button>
+        </div>
+        <div class="scholarship-card">
+          <div style="font-size:28px;margin-bottom:10px;">🌍</div>
+          <span class="scholarship-deadline" style="background:var(--blue-light);color:var(--blue);">⏰ Closes 15 May</span>
+          <div class="card-title" style="margin-bottom:6px;">De Beers Group Education Award</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">De Beers Botswana · Full Tuition</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">Open to undergraduate and postgraduate students in Mining, Geology, or Environmental Science. Recipients may be offered employment upon graduation.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+            <span class="tag tag-navy">Mining</span><span class="tag tag-blue">Full Bursary</span>
+          </div>
+          <button class="btn btn-navy btn-full" onclick="openApplyModal('De Beers Education Award','De Beers Botswana')">Apply Now</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== COURSES ========== -->
+    <section class="page-section" id="sec-courses">
+      <div class="page-header fade-up d0">
+        <h2>Training Courses</h2>
+        <p>Short courses and skill programmes created by employers to prepare you for the workplace.</p>
+      </div>
+      <div class="course-grid fade-up d1">
+        <div class="module-card">
+          <div class="module-card-header" style="background:var(--teal-light);">📊</div>
+          <div class="module-card-body">
+            <div class="module-card-title">Excel for Finance</div>
+            <div class="module-card-meta">By First National Bank · 6 lessons · Free</div>
+            <div class="module-progress-label"><span>Progress</span><span style="color:var(--teal)">3/6</span></div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:50%"></div></div>
+            <button class="btn btn-teal btn-full" style="margin-top:12px;">Continue</button>
+          </div>
+        </div>
+        <div class="module-card">
+          <div class="module-card-header" style="background:var(--blue-light);">🔒</div>
+          <div class="module-card-body">
+            <div class="module-card-title">Cybersecurity Fundamentals</div>
+            <div class="module-card-meta">By Mascom · 8 lessons · Free</div>
+            <div class="module-progress-label"><span>Progress</span><span style="color:var(--blue)">1/8</span></div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:12%;background:linear-gradient(90deg,var(--blue),var(--teal))"></div></div>
+            <button class="btn btn-navy btn-full" style="margin-top:12px;">Continue</button>
+          </div>
+        </div>
+        <div class="module-card">
+          <div class="module-card-header" style="background:var(--gold-light);">🤝</div>
+          <div class="module-card-body">
+            <div class="module-card-title">Workplace Readiness</div>
+            <div class="module-card-meta">By GradBridge · 5 lessons · Free</div>
+            <div class="module-progress-label"><span>Not started</span></div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div>
+            <button class="btn btn-outline btn-full" style="margin-top:12px;">Start Course</button>
+          </div>
+        </div>
+        <div class="module-card">
+          <div class="module-card-header" style="background:var(--green-light);">📈</div>
+          <div class="module-card-body">
+            <div class="module-card-title">Data Analysis with Python</div>
+            <div class="module-card-meta">By BIUST · 10 lessons · Free</div>
+            <div class="module-progress-label"><span>Not started</span></div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div>
+            <button class="btn btn-outline btn-full" style="margin-top:12px;">Start Course</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== APPLICATIONS ========== -->
+    <section class="page-section" id="sec-applications">
+      <div class="page-header fade-up d0">
+        <h2>My Applications</h2>
+        <p>Track all your internship, attachment and scholarship applications.</p>
+      </div>
+      <div class="card fade-up d1">
+        <div class="applicant-row applicant-row-header">
+          <div>Position</div><div>Company</div><div>Type</div><div>Status</div><div>Action</div>
+        </div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">IT Graduate Intern</div><div style="font-size:12px;color:var(--text-muted);">Applied 10 Mar 2025</div></div>
+          <div style="color:var(--text-secondary);">First National Bank</div>
+          <div><span class="tag tag-teal">Internship</span></div>
+          <div><span class="app-status-pill status-review">Under Review</span></div>
+          <div><button class="btn btn-ghost btn-sm">View</button></div>
+        </div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">Letshego STEM Scholarship</div><div style="font-size:12px;color:var(--text-muted);">Applied 5 Mar 2025</div></div>
+          <div style="color:var(--text-secondary);">Letshego</div>
+          <div><span class="tag tag-gold">Scholarship</span></div>
+          <div><span class="app-status-pill status-pending">Pending</span></div>
+          <div><button class="btn btn-ghost btn-sm">View</button></div>
+        </div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">Engineering Attachment</div><div style="font-size:12px;color:var(--text-muted);">Applied 1 Mar 2025</div></div>
+          <div style="color:var(--text-secondary);">Debswana</div>
+          <div><span class="tag tag-blue">Attachment</span></div>
+          <div><span class="app-status-pill status-accepted">Accepted ✓</span></div>
+          <div><button class="btn btn-ghost btn-sm">View Letter</button></div>
+        </div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">Data Science Intern</div><div style="font-size:12px;color:var(--text-muted);">Applied 20 Feb 2025</div></div>
+          <div style="color:var(--text-secondary);">BDC</div>
+          <div><span class="tag tag-teal">Internship</span></div>
+          <div><span class="app-status-pill status-rejected">Not Selected</span></div>
+          <div><button class="btn btn-ghost btn-sm">Feedback</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SAVED ========== -->
+    <section class="page-section" id="sec-saved">
+      <div class="page-header fade-up d0">
+        <h2>Saved Opportunities</h2>
+        <p>Listings you've bookmarked to apply later.</p>
+      </div>
+      <div class="card fade-up d1">
+        <div class="listing-item">
+          <div class="listing-logo">📡</div>
+          <div class="listing-info">
+            <div class="listing-title">Software Development Intern — Mascom Wireless</div>
+            <div class="listing-meta"><span>Gaborone</span><span class="listing-meta-sep">·</span><span>4 months</span><span class="listing-meta-sep">·</span><span class="tag tag-teal">Tech</span></div>
+          </div>
+          <div class="listing-actions">
+            <button class="btn btn-navy btn-sm" onclick="openApplyModal('Software Development Intern','Mascom')">Apply</button>
+            <button class="btn btn-outline btn-sm">Remove</button>
+          </div>
+        </div>
+        <div class="listing-item">
+          <div class="listing-logo">🌍</div>
+          <div class="listing-info">
+            <div class="listing-title">De Beers Education Award</div>
+            <div class="listing-meta"><span>De Beers Botswana</span><span class="listing-meta-sep">·</span><span>Full Tuition</span><span class="listing-meta-sep">·</span><span class="tag tag-gold">Scholarship</span></div>
+          </div>
+          <div class="listing-actions">
+            <button class="btn btn-navy btn-sm" onclick="openApplyModal('De Beers Education Award','De Beers')">Apply</button>
+            <button class="btn btn-outline btn-sm">Remove</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== PROFILE ========== -->
+    <section class="page-section" id="sec-profile">
+      <div class="page-header fade-up d0">
+        <h2>My Profile</h2>
+        <p>Keep your profile updated to improve your chances of being noticed by employers.</p>
+      </div>
+      <div class="two-col-3-1 fade-up d1">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Personal Information</span><button class="btn btn-outline btn-sm">Edit</button></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">First Name</label><input class="form-input" value="Tshegofatso" /></div>
+              <div class="form-group"><label class="form-label">Surname</label><input class="form-input" value="Moeng" /></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="tshego@ub.ac.bw" /></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+267 7X XXX XXX" /></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Academic Details</span><button class="btn btn-outline btn-sm">Edit</button></div>
+            <div class="form-group"><label class="form-label">Institution</label><input class="form-input" value="University of Botswana" /></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Programme</label><input class="form-input" value="BSc Computer Science" /></div>
+              <div class="form-group"><label class="form-label">Year of Study</label><select class="form-select"><option selected>Year 3</option><option>Year 1</option><option>Year 2</option><option>Year 4</option></select></div>
+            </div>
+            <div class="form-group"><label class="form-label">GPA / Average Grade</label><input class="form-input" value="3.4 / 4.0" /></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Skills</span><button class="btn btn-outline btn-sm">Add Skill</button></div>
+            <div class="skills-wrap">
+              <span class="skill-chip">Python</span><span class="skill-chip">SQL</span><span class="skill-chip matched">JavaScript</span><span class="skill-chip matched">React</span><span class="skill-chip">Data Analysis</span><span class="skill-chip">Report Writing</span>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">CV / Documents</span><button class="btn btn-outline btn-sm">Upload</button></div>
+            <div class="listing-item" style="padding:12px 0;">
+              <div class="listing-logo" style="font-size:20px;">📄</div>
+              <div class="listing-info"><div class="listing-title">Tshegofatso_CV_2025.pdf</div><div class="listing-meta">Uploaded 5 Mar 2025</div></div>
+              <div class="listing-actions"><button class="btn btn-ghost btn-sm">Replace</button></div>
+            </div>
+          </div>
+          <button class="btn btn-navy btn-lg btn-full">Save All Changes</button>
+        </div>
+        <div>
+          <div class="profile-completion">
+            <div class="profile-completion-pct">72%</div>
+            <div class="profile-completion-label">Profile Complete</div>
+            <div class="profile-completion-bar"><div class="profile-completion-fill" style="width:72%"></div></div>
+          </div>
+          <div class="card" style="margin-top:16px;">
+            <div class="card-title" style="margin-bottom:12px;">Complete Your Profile</div>
+            <div class="timeline">
+              <div class="timeline-item done"><div class="timeline-label">Personal Info</div><div class="timeline-sub">All fields complete</div></div>
+              <div class="timeline-item done"><div class="timeline-label">Academic Details</div><div class="timeline-sub">Institution linked</div></div>
+              <div class="timeline-item active"><div class="timeline-label">Upload CV</div><div class="timeline-sub">Add your latest resume</div></div>
+              <div class="timeline-item"><div class="timeline-label">Add References</div><div class="timeline-sub">2 references needed</div></div>
+              <div class="timeline-item"><div class="timeline-label">Verify Student Status</div><div class="timeline-sub">Upload student card</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- ===== APPLY MODAL ===== -->
+<div class="modal-backdrop" id="modal-apply">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:28px;margin-bottom:12px;">📨</div>
+    <div class="modal-title" id="modal-apply-title">Apply for Position</div>
+    <div class="modal-sub" id="modal-apply-sub">Submit your application below.</div>
+    <div class="form-group"><label class="form-label">Cover Letter</label><textarea class="form-textarea" placeholder="Briefly explain why you're a great fit for this opportunity…"></textarea></div>
+    <div class="form-group"><label class="form-label">Attach CV</label><input class="form-input" type="file" accept=".pdf,.doc,.docx" /></div>
+    <div class="form-group"><label class="form-label">Supporting Documents (optional)</label><input class="form-input" type="file" accept=".pdf" /></div>
+    <div class="modal-footer-row">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-navy" style="flex:2" onclick="submitApplication()">Submit Application →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    const titles = { dashboard:'Dashboard', internships:'Internships', attachment:'Attachment Opportunities', scholarships:'Scholarships & Funding', courses:'Training Courses', applications:'My Applications', saved:'Saved', profile:'My Profile' };
+    document.getElementById('topbar-title').textContent = titles[id] || '';
+    event.currentTarget && event.currentTarget.classList.add('active');
+    // fallback nav highlight
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if(n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+    });
+  }
+  function openApplyModal(role, company) {
+    document.getElementById('modal-apply-title').textContent = 'Apply — ' + role;
+    document.getElementById('modal-apply-sub').textContent = 'Submitting to ' + company + ' via GradBridge.';
+    document.getElementById('modal-apply').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+    document.body.style.overflow = '';
+  }
+  function submitApplication() {
+    closeModal();
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:28px;right:28px;background:#0B1F3A;color:#fff;padding:14px 22px;border-radius:12px;font-family:Syne,sans-serif;font-weight:700;font-size:13px;z-index:999;box-shadow:0 12px 40px rgba(0,0,0,0.2);animation:fadeUp 0.3s ease';
+    toast.textContent = '✓ Application submitted successfully!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+  document.querySelectorAll('.modal-backdrop').forEach(b => b.addEventListener('click', function(e){ if(e.target===this) closeModal(); }));
+</script>
+</body>
+</html>
