@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GradBridge — Employer Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .avatar-employer { background: linear-gradient(135deg, #0D7070, #0B1F3A); }
+    .stat-icon-1 { background: var(--blue-light); }
+    .stat-icon-2 { background: var(--teal-light); }
+    .stat-icon-3 { background: var(--gold-light); }
+    .stat-icon-4 { background: var(--green-light); }
+    .listing-status { font-size:11px; font-weight:700; font-family:'Syne',sans-serif; padding:3px 10px; border-radius:var(--r-pill); }
+    .status-active   { background:var(--green-light); color:var(--green); }
+    .status-closed   { background:var(--rose-light); color:var(--rose); }
+    .status-draft    { background:var(--light); color:var(--text-muted); }
+    .status-review   { background:var(--blue-light); color:var(--blue); }
+    .status-pending  { background:var(--gold-light); color:var(--gold); }
+    .status-shortlist{ background:var(--teal-light); color:var(--teal); }
+    .post-form { background:var(--white); border:1px solid var(--border); border-radius:var(--r-xl); padding:28px; box-shadow:var(--shadow-sm); }
+    .skill-input-wrap { display:flex; gap:8px; }
+    .skill-input-wrap input { flex:1; }
+    .checkpoint-item { display:flex; align-items:center; gap:12px; padding:12px; background:var(--off-white); border-radius:var(--r-md); border:1px solid var(--border); margin-bottom:8px; }
+    .checkpoint-num { width:26px; height:26px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:12px; flex-shrink:0; }
+    .employer-listing-grid { display:flex; flex-direction:column; gap:12px; }
+    .employer-listing { display:grid; grid-template-columns:2fr 1fr 1fr 1fr auto; align-items:center; gap:12px; padding:14px 0; border-bottom:1px solid var(--border-light); font-size:13.5px; }
+    .employer-listing:last-child { border-bottom:none; }
+    .employer-listing-header { font-size:11px; font-weight:700; font-family:'Syne',sans-serif; text-transform:uppercase; letter-spacing:0.07em; color:var(--text-muted); border-bottom:1px solid var(--border) !important; padding:0 0 10px !important; }
+    .candidate-score { display:flex; align-items:center; gap:6px; }
+    .score-bar { flex:1; height:6px; background:var(--light); border-radius:var(--r-pill); overflow:hidden; }
+    .score-fill { height:100%; border-radius:var(--r-pill); background:linear-gradient(90deg,var(--navy-500),var(--teal)); }
+    .score-num { font-family:'Syne',sans-serif; font-weight:800; font-size:12px; min-width:30px; text-align:right; }
+    .tab-nav { display:flex; border-bottom:2px solid var(--border); margin-bottom:22px; }
+    .tab-btn { padding:10px 20px; font-family:'Syne',sans-serif; font-weight:700; font-size:13px; color:var(--text-muted); background:transparent; border:none; border-bottom:2px solid transparent; margin-bottom:-2px; cursor:pointer; transition:all var(--t-fast); }
+    .tab-btn.active { color:var(--navy); border-bottom-color:var(--navy); }
+    .tab-content { display:none; }
+    .tab-content.active { display:block; }
+    .form-section-title { font-family:'Syne',sans-serif; font-weight:700; font-size:14px; color:var(--text-primary); padding:14px 0 10px; border-bottom:1px solid var(--border-light); margin-bottom:16px; }
+    .chart-bar-row { display:flex; align-items:center; gap:10px; margin-bottom:10px; font-size:13px; }
+    .chart-bar-label { min-width:100px; color:var(--text-muted); }
+    .chart-bar-outer { flex:1; height:10px; background:var(--light); border-radius:var(--r-pill); }
+    .chart-bar-inner { height:100%; border-radius:var(--r-pill); background:linear-gradient(90deg,var(--navy),var(--teal)); }
+    .chart-bar-num { min-width:28px; text-align:right; font-family:'Syne',sans-serif; font-weight:700; font-size:13px; }
+    .training-step { background:var(--white); border:1px solid var(--border); border-radius:var(--r-lg); padding:16px; display:flex; align-items:flex-start; gap:14px; }
+    .step-circle { width:36px; height:36px; border-radius:50%; background:var(--navy); color:#fff; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:800; font-size:14px; flex-shrink:0; }
+  </style>
+</head>
+<body>
+<div class="layout">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="gradbridge-home.html" class="sidebar-brand">
+      <div class="sidebar-brand-icon">G</div>
+      <span class="sidebar-brand-name">GradBridge</span>
+    </a>
+    <nav class="sidebar-nav">
+      <div style="padding:18px 8px 6px;display:block;font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);">Overview</div>
+      <div class="nav-item active" onclick="showSection('dashboard')"><span class="nav-item-icon">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="showSection('post-job')"><span class="nav-item-icon">➕</span>Post New Listing</div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin:14px 0;"></div>
+      <div style="padding:0 8px 6px;font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);">Manage</div>
+      <div class="nav-item" onclick="showSection('listings')"><span class="nav-item-icon">📋</span>My Listings<span class="nav-badge">5</span></div>
+      <div class="nav-item" onclick="showSection('applicants')"><span class="nav-item-icon">👥</span>Applicants<span class="nav-badge">24</span></div>
+      <div class="nav-item" onclick="showSection('training')"><span class="nav-item-icon">📚</span>Training Programmes</div>
+      <div class="nav-item" onclick="showSection('scholarships')"><span class="nav-item-icon">🎓</span>Scholarships</div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin:14px 0;"></div>
+      <div style="padding:0 8px 6px;font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);">Settings</div>
+      <div class="nav-item" onclick="showSection('profile')"><span class="nav-item-icon">🏢</span>Company Profile</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar avatar-employer">D</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Debswana Corp.</div>
+          <div class="sidebar-user-role">Employer Account</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="topbar-title" id="topbar-title">Dashboard</span>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span style="color:var(--text-muted);font-size:14px;">🔍</span>
+        <input type="text" placeholder="Search applicants, listings…" />
+      </div>
+      <button class="topbar-icon-btn">🔔<span class="notif-dot"></span></button>
+      <div class="topbar-avatar avatar-employer">D</div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- ========== DASHBOARD ========== -->
+    <section class="page-section active" id="sec-dashboard">
+      <div class="page-header fade-up d0">
+        <h2>Debswana Dashboard 🏢</h2>
+        <p>Here's your recruitment and training overview for this month.</p>
+      </div>
+      <div class="stats-grid fade-up d1">
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-1">📋</div><span class="stat-card-badge badge-up">Active</span></div>
+          <div class="stat-card-num">5</div>
+          <div class="stat-card-label">Active Listings</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-2">👥</div><span class="stat-card-badge badge-new">+8 today</span></div>
+          <div class="stat-card-num">24</div>
+          <div class="stat-card-label">Total Applicants</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-3">📚</div></div>
+          <div class="stat-card-num">3</div>
+          <div class="stat-card-label">Training Modules</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-4">🎓</div><span class="stat-card-badge badge-new">1 active</span></div>
+          <div class="stat-card-num">2</div>
+          <div class="stat-card-label">Scholarships Posted</div>
+        </div>
+      </div>
+
+      <div class="two-col fade-up d2">
+        <!-- Recent Applicants -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Recent Applicants</span><a class="card-link" onclick="showSection('applicants')">View all →</a></div>
+          <div class="listing-item">
+            <div class="listing-logo" style="background:linear-gradient(135deg,#0D7070,#1E6FD9);color:#fff;font-family:'Syne',sans-serif;font-weight:700;">TM</div>
+            <div class="listing-info"><div class="listing-title">Tshegofatso Moeng</div><div class="listing-meta">Engineering Attachment · Applied 5h ago<span class="listing-meta-sep">·</span><span style="color:var(--green);font-weight:600;">91% match</span></div></div>
+            <div class="listing-actions"><button class="btn btn-navy btn-sm" onclick="showSection('applicants')">Review</button></div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo" style="background:linear-gradient(135deg,#1E6FD9,#0B1F3A);color:#fff;font-family:'Syne',sans-serif;font-weight:700;">KS</div>
+            <div class="listing-info"><div class="listing-title">Keitumetse Sithole</div><div class="listing-meta">Geology Graduate Programme · Applied 8h ago<span class="listing-meta-sep">·</span><span style="color:var(--gold);font-weight:600;">78% match</span></div></div>
+            <div class="listing-actions"><button class="btn btn-navy btn-sm" onclick="showSection('applicants')">Review</button></div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo" style="background:linear-gradient(135deg,#C4522A,#1E6FD9);color:#fff;font-family:'Syne',sans-serif;font-weight:700;">LM</div>
+            <div class="listing-info"><div class="listing-title">Lebogang Molefe</div><div class="listing-meta">Safety Officer · Applied Yesterday<span class="listing-meta-sep">·</span><span style="color:var(--green);font-weight:600;">85% match</span></div></div>
+            <div class="listing-actions"><button class="btn btn-navy btn-sm" onclick="showSection('applicants')">Review</button></div>
+          </div>
+        </div>
+
+        <!-- Application Stats -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Applications by Listing</span></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">Eng. Attachment</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:85%"></div></div><div class="chart-bar-num">12</div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">Geology Programme</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:55%"></div></div><div class="chart-bar-num">7</div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">Safety Officer</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:35%"></div></div><div class="chart-bar-num">3</div></div>
+          <div class="chart-bar-row"><div class="chart-bar-label">IT Intern</div><div class="chart-bar-outer"><div class="chart-bar-inner" style="width:25%"></div></div><div class="chart-bar-num">2</div></div>
+          <div style="margin-top:14px;padding:12px;background:var(--blue-light);border-radius:var(--r-lg);">
+            <span style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--blue);">💡 Tip: Engineering Attachment has 12 applicants — start reviewing now!</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="two-col fade-up d3">
+        <!-- Active Listings Summary -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Active Listings</span><a class="card-link" onclick="showSection('listings')">Manage →</a></div>
+          <div class="listing-item"><div class="listing-logo">⛏️</div><div class="listing-info"><div class="listing-title">Engineering Attachment</div><div class="listing-meta">Closes 7 Apr · 12 applications</div></div><span class="listing-status status-active">Active</span></div>
+          <div class="listing-item"><div class="listing-logo">🪨</div><div class="listing-info"><div class="listing-title">Geology Graduate Programme</div><div class="listing-meta">Closes 20 Apr · 7 applications</div></div><span class="listing-status status-active">Active</span></div>
+          <div class="listing-item"><div class="listing-logo">🛡️</div><div class="listing-info"><div class="listing-title">Safety Officer (Permanent)</div><div class="listing-meta">Closes 30 Apr · 3 applications</div></div><span class="listing-status status-active">Active</span></div>
+          <div class="listing-item"><div class="listing-logo">💻</div><div class="listing-info"><div class="listing-title">IT Support Intern</div><div class="listing-meta">Draft — Not published</div></div><span class="listing-status status-draft">Draft</span></div>
+        </div>
+
+        <!-- Training Overview -->
+        <div class="card">
+          <div class="card-header"><span class="card-title">Training Programmes</span><a class="card-link" onclick="showSection('training')">Manage →</a></div>
+          <div class="listing-item">
+            <div class="listing-logo">⛑️</div>
+            <div class="listing-info">
+              <div class="listing-title">Mine Safety Induction</div>
+              <div class="listing-meta">48 enrolled · 4 checkpoints</div>
+              <div class="progress-bar-wrap" style="margin-top:6px;"><div class="progress-bar-fill" style="width:82%"></div></div>
+            </div>
+            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--navy);">82%</span>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">📊</div>
+            <div class="listing-info">
+              <div class="listing-title">ESG Reporting Essentials</div>
+              <div class="listing-meta">22 enrolled · 5 checkpoints</div>
+              <div class="progress-bar-wrap" style="margin-top:6px;"><div class="progress-bar-fill" style="width:55%"></div></div>
+            </div>
+            <span style="font-family:'Syne',sans-serif;font-weight:800;font-size:14px;color:var(--navy);">55%</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== POST NEW LISTING ========== -->
+    <section class="page-section" id="sec-post-job">
+      <div class="page-header fade-up d0">
+        <h2>Post New Listing</h2>
+        <p>Create a job, internship, or attachment opportunity for Batswana talent.</p>
+      </div>
+      <div class="post-form fade-up d1">
+        <div class="tab-nav">
+          <button class="tab-btn active" onclick="switchTab('tab-job')">💼 Job / Internship</button>
+          <button class="tab-btn" onclick="switchTab('tab-attachment')">📎 Attachment</button>
+        </div>
+
+        <!-- JOB TAB -->
+        <div class="tab-content active" id="tab-job">
+          <div class="form-section-title">📌 Basic Information</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Position Title</label><input class="form-input" placeholder="e.g. Junior Software Developer" /></div>
+            <div class="form-group"><label class="form-label">Position Type</label><select class="form-select"><option>Permanent</option><option>Internship</option><option>Contract</option><option>Part-time</option></select></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Industry / Department</label><select class="form-select"><option>Select…</option><option>Engineering</option><option>IT / Technology</option><option>Finance</option><option>HR</option><option>Operations</option><option>Geology</option></select></div>
+            <div class="form-group"><label class="form-label">Location</label><input class="form-input" placeholder="e.g. Jwaneng" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Salary / Stipend (P/month)</label><input class="form-input" type="text" placeholder="e.g. P15,000 – P18,000" /></div>
+            <div class="form-group"><label class="form-label">Duration (if applicable)</label><input class="form-input" placeholder="e.g. 6 months" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Application Closing Date</label><input class="form-input" type="date" /></div>
+
+          <div class="form-section-title">📝 Description</div>
+          <div class="form-group"><label class="form-label">Role Description</label><textarea class="form-textarea" style="min-height:120px;" placeholder="Describe day-to-day responsibilities, team structure, and what the candidate will work on…"></textarea></div>
+          <div class="form-group"><label class="form-label">Minimum Requirements</label><textarea class="form-textarea" placeholder="e.g. Degree in Engineering or equivalent, 0–2 years experience…"></textarea></div>
+
+          <div class="form-section-title">🧠 Required Skills</div>
+          <p style="font-size:13px;color:var(--text-muted);margin-bottom:12px;">Add the specific skills required. Students and graduates can see how well they match before applying.</p>
+          <div id="skills-list" style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px;">
+            <span class="skill-chip" style="cursor:pointer;" onclick="removeSkill(this)">Python ✕</span>
+            <span class="skill-chip" style="cursor:pointer;" onclick="removeSkill(this)">AutoCAD ✕</span>
+            <span class="skill-chip" style="cursor:pointer;" onclick="removeSkill(this)">Report Writing ✕</span>
+          </div>
+          <div class="skill-input-wrap">
+            <input class="form-input" id="skill-input" placeholder="Type a skill and press Add…" onkeydown="if(event.key==='Enter')addSkill()" />
+            <button class="btn btn-outline" onclick="addSkill()">Add Skill</button>
+          </div>
+
+          <div class="form-section-title" style="margin-top:22px;">📄 Documents Required from Applicant</div>
+          <div style="display:flex;flex-wrap:wrap;gap:10px;">
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;"><input type="checkbox" checked /> CV / Resume</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;"><input type="checkbox" checked /> Cover Letter</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;"><input type="checkbox" /> Academic Transcript</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;"><input type="checkbox" /> National ID</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;"><input type="checkbox" /> Reference Letter</label>
+            <label style="display:flex;align-items:center;gap:7px;font-size:13px;cursor:pointer;"><input type="checkbox" /> University Attachment Letter</label>
+          </div>
+
+          <div style="display:flex;gap:12px;margin-top:28px;">
+            <button class="btn btn-outline btn-lg" style="flex:1">Save as Draft</button>
+            <button class="btn btn-navy btn-lg" style="flex:2" onclick="publishListing()">Publish Listing →</button>
+          </div>
+        </div>
+
+        <!-- ATTACHMENT TAB -->
+        <div class="tab-content" id="tab-attachment">
+          <div class="form-section-title">📎 Attachment Details</div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Attachment Title</label><input class="form-input" placeholder="e.g. Electrical Engineering Attachment" /></div>
+            <div class="form-group"><label class="form-label">Department</label><input class="form-input" placeholder="e.g. Operations" /></div>
+          </div>
+          <div class="form-row">
+            <div class="form-group"><label class="form-label">Duration</label><input class="form-input" placeholder="e.g. 4–6 months" /></div>
+            <div class="form-group"><label class="form-label">Stipend</label><input class="form-input" placeholder="e.g. P2,500/month or Unpaid" /></div>
+          </div>
+          <div class="form-group"><label class="form-label">Eligible Students</label><select class="form-select"><option>All universities</option><option>University of Botswana (UB)</option><option>BIUST</option><option>Botho University</option></select></div>
+          <div class="form-group"><label class="form-label">Field of Study Required</label><input class="form-input" placeholder="e.g. Electrical Engineering, Mechanical Engineering" /></div>
+          <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="Describe what students will do during the attachment…"></textarea></div>
+          <div class="form-group"><label class="form-label">Closing Date</label><input class="form-input" type="date" /></div>
+          <div style="display:flex;gap:12px;margin-top:20px;">
+            <button class="btn btn-outline btn-lg" style="flex:1">Save as Draft</button>
+            <button class="btn btn-navy btn-lg" style="flex:2" onclick="publishListing()">Publish Listing →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== MY LISTINGS ========== -->
+    <section class="page-section" id="sec-listings">
+      <div class="page-header fade-up d0" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div><h2>My Listings</h2><p>Manage all your active, draft, and closed job postings.</p></div>
+        <button class="btn btn-navy btn-lg" onclick="showSection('post-job')">➕ Post New</button>
+      </div>
+      <div class="card fade-up d1">
+        <div class="employer-listing employer-listing-header">
+          <div>Position</div><div>Type</div><div>Applications</div><div>Status</div><div>Actions</div>
+        </div>
+        <div class="employer-listing">
+          <div><div style="font-weight:700;font-size:14px;">Engineering Attachment</div><div style="font-size:12px;color:var(--text-muted);">Posted 1 Mar · Closes 7 Apr</div></div>
+          <span class="tag tag-blue">Attachment</span>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--navy);">12</div>
+          <span class="listing-status status-active">Active</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="showSection('applicants')">View</button>
+            <button class="btn btn-ghost btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm">Close</button>
+          </div>
+        </div>
+        <div class="employer-listing">
+          <div><div style="font-weight:700;font-size:14px;">Geology Graduate Programme</div><div style="font-size:12px;color:var(--text-muted);">Posted 5 Mar · Closes 20 Apr</div></div>
+          <span class="tag tag-teal">Graduate</span>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--navy);">7</div>
+          <span class="listing-status status-active">Active</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="showSection('applicants')">View</button>
+            <button class="btn btn-ghost btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm">Close</button>
+          </div>
+        </div>
+        <div class="employer-listing">
+          <div><div style="font-weight:700;font-size:14px;">Safety Officer</div><div style="font-size:12px;color:var(--text-muted);">Posted 8 Mar · Closes 30 Apr</div></div>
+          <span class="tag tag-teal">Permanent</span>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--navy);">3</div>
+          <span class="listing-status status-active">Active</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm" onclick="showSection('applicants')">View</button>
+            <button class="btn btn-ghost btn-sm">Edit</button>
+            <button class="btn btn-danger btn-sm">Close</button>
+          </div>
+        </div>
+        <div class="employer-listing">
+          <div><div style="font-weight:700;font-size:14px;">IT Support Intern</div><div style="font-size:12px;color:var(--text-muted);">Not yet published</div></div>
+          <span class="tag tag-navy">Internship</span>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--text-muted);">—</div>
+          <span class="listing-status status-draft">Draft</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-navy btn-sm" onclick="publishListing()">Publish</button>
+            <button class="btn btn-ghost btn-sm">Edit</button>
+          </div>
+        </div>
+        <div class="employer-listing">
+          <div><div style="font-weight:700;font-size:14px;">Finance Internship</div><div style="font-size:12px;color:var(--text-muted);">Closed 28 Feb · 18 applications</div></div>
+          <span class="tag tag-gold">Internship</span>
+          <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:16px;color:var(--text-muted);">18</div>
+          <span class="listing-status status-closed">Closed</span>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-outline btn-sm">Archive</button>
+            <button class="btn btn-ghost btn-sm">Repost</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== APPLICANTS ========== -->
+    <section class="page-section" id="sec-applicants">
+      <div class="page-header fade-up d0">
+        <h2>Applicants</h2>
+        <p>Review, shortlist, and manage all candidates who applied to your listings.</p>
+      </div>
+      <div class="filters-bar fade-up d1">
+        <div class="search-input-bar"><span>🔍</span><input type="text" placeholder="Search applicants…" /></div>
+        <select class="filter-select"><option>All Listings</option><option>Engineering Attachment</option><option>Geology Programme</option><option>Safety Officer</option></select>
+        <select class="filter-select"><option>All Statuses</option><option>New</option><option>Under Review</option><option>Shortlisted</option><option>Rejected</option></select>
+        <select class="filter-select"><option>Sort: Best Match</option><option>Sort: Most Recent</option><option>Sort: Name A–Z</option></select>
+      </div>
+      <div class="card fade-up d2">
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr auto;gap:12px;padding:0 0 10px;border-bottom:1px solid var(--border);font-size:11px;font-weight:700;font-family:'Syne',sans-serif;text-transform:uppercase;letter-spacing:0.07em;color:var(--text-muted);">
+          <div>Candidate</div><div>Applied For</div><div>Match</div><div>Status</div><div>Date</div><div>Actions</div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-light);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0D7070,#1E6FD9);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">TM</div>
+            <div><div style="font-weight:600;font-size:13.5px;">Tshegofatso Moeng</div><div style="font-size:11.5px;color:var(--text-muted);">UB · BSc CS · Year 3</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);">Engineering Attachment</div>
+          <div class="candidate-score"><div class="score-bar"><div class="score-fill" style="width:91%"></div></div><div class="score-num" style="color:var(--green);">91%</div></div>
+          <span class="listing-status status-review">Reviewing</span>
+          <div style="font-size:12px;color:var(--text-muted);">Today</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-navy btn-sm" onclick="openCandidateModal('Tshegofatso Moeng','Engineering Attachment','91')">View</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('Shortlisted ✓')">Shortlist</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-light);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#C4522A,#0B1F3A);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">LM</div>
+            <div><div style="font-weight:600;font-size:13.5px;">Lebogang Molefe</div><div style="font-size:11.5px;color:var(--text-muted);">BIUST · BSc Mining Eng · Grad 2024</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);">Safety Officer</div>
+          <div class="candidate-score"><div class="score-bar"><div class="score-fill" style="width:85%"></div></div><div class="score-num" style="color:var(--green);">85%</div></div>
+          <span class="listing-status status-shortlist">Shortlisted</span>
+          <div style="font-size:12px;color:var(--text-muted);">Yesterday</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-navy btn-sm" onclick="openCandidateModal('Lebogang Molefe','Safety Officer','85')">View</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('Interview invite sent!')">Invite</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr auto;gap:12px;align-items:center;padding:14px 0;border-bottom:1px solid var(--border-light);">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#C98A0A,#0D7070);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">KS</div>
+            <div><div style="font-weight:600;font-size:13.5px;">Keitumetse Sithole</div><div style="font-size:11.5px;color:var(--text-muted);">UB · BSc Geology · Year 4</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);">Geology Programme</div>
+          <div class="candidate-score"><div class="score-bar"><div class="score-fill" style="width:78%"></div></div><div class="score-num" style="color:var(--gold);">78%</div></div>
+          <span class="listing-status status-pending">New</span>
+          <div style="font-size:12px;color:var(--text-muted);">2 days ago</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-navy btn-sm" onclick="openCandidateModal('Keitumetse Sithole','Geology Programme','78')">View</button>
+            <button class="btn btn-outline btn-sm" onclick="showToast('Shortlisted ✓')">Shortlist</button>
+          </div>
+        </div>
+
+        <div style="display:grid;grid-template-columns:2fr 1.5fr 1fr 1fr 1fr auto;gap:12px;align-items:center;padding:14px 0;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <div style="width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#0f9d6e,#1E6FD9);color:#fff;font-family:'Syne',sans-serif;font-weight:700;font-size:12px;display:flex;align-items:center;justify-content:center;">OM</div>
+            <div><div style="font-weight:600;font-size:13.5px;">Oabona Molefe</div><div style="font-size:11.5px;color:var(--text-muted);">Botho · BSc IT · Grad 2024</div></div>
+          </div>
+          <div style="font-size:13px;color:var(--text-secondary);">Engineering Attachment</div>
+          <div class="candidate-score"><div class="score-bar"><div class="score-fill" style="width:62%"></div></div><div class="score-num" style="color:var(--gold);">62%</div></div>
+          <span class="listing-status status-pending">New</span>
+          <div style="font-size:12px;color:var(--text-muted);">3 days ago</div>
+          <div style="display:flex;gap:6px;">
+            <button class="btn btn-navy btn-sm" onclick="openCandidateModal('Oabona Molefe','Engineering Attachment','62')">View</button>
+            <button class="btn btn-danger btn-sm" onclick="showToast('Applicant declined.')">Decline</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== TRAINING PROGRAMMES ========== -->
+    <section class="page-section" id="sec-training">
+      <div class="page-header fade-up d0" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div><h2>Training Programmes</h2><p>Create and manage employee training modules with checkpoints.</p></div>
+        <button class="btn btn-navy btn-lg" onclick="openTrainingModal()">➕ Create Programme</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:16px;" class="fade-up d1">
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">⛑️ Mine Safety Induction</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">48 employees enrolled · Required for all field staff</div></div>
+            <div style="display:flex;gap:8px;">
+              <span class="listing-status status-active" style="align-self:center;">Active</span>
+              <button class="btn btn-outline btn-sm">Edit</button>
+            </div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);margin-bottom:6px;"><span>Overall Completion</span><span style="color:var(--navy);">82%</span></div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:82%"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="training-step"><div class="step-circle" style="background:var(--green);">✓</div><div><div style="font-weight:700;font-size:13.5px;">Checkpoint 1: Introduction to Mine Safety</div><div style="font-size:12px;color:var(--text-muted);">48/48 completed</div></div></div>
+            <div class="training-step"><div class="step-circle" style="background:var(--green);">✓</div><div><div style="font-weight:700;font-size:13.5px;">Checkpoint 2: Equipment Handling</div><div style="font-size:12px;color:var(--text-muted);">46/48 completed</div></div></div>
+            <div class="training-step"><div class="step-circle">3</div><div><div style="font-weight:700;font-size:13.5px;">Checkpoint 3: Emergency Procedures</div><div style="font-size:12px;color:var(--text-muted);">38/48 completed · In progress</div></div></div>
+            <div class="training-step"><div class="step-circle" style="background:var(--light);color:var(--text-muted);">4</div><div><div style="font-weight:700;font-size:13.5px;color:var(--text-muted);">Checkpoint 4: Final Assessment</div><div style="font-size:12px;color:var(--text-muted);">Not started</div></div></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-header">
+            <div><div class="card-title">📊 ESG Reporting Essentials</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">22 employees enrolled · Finance & Management teams</div></div>
+            <div style="display:flex;gap:8px;"><span class="listing-status status-active" style="align-self:center;">Active</span><button class="btn btn-outline btn-sm">Edit</button></div>
+          </div>
+          <div style="margin-bottom:14px;">
+            <div style="display:flex;justify-content:space-between;font-size:12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);margin-bottom:6px;"><span>Overall Completion</span><span style="color:var(--navy);">55%</span></div>
+            <div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:55%"></div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px;">
+            <div class="training-step"><div class="step-circle" style="background:var(--green);">✓</div><div><div style="font-weight:700;font-size:13.5px;">Checkpoint 1: What is ESG?</div><div style="font-size:12px;color:var(--text-muted);">22/22 completed</div></div></div>
+            <div class="training-step"><div class="step-circle">2</div><div><div style="font-weight:700;font-size:13.5px;">Checkpoint 2: Environmental Metrics</div><div style="font-size:12px;color:var(--text-muted);">14/22 completed · In progress</div></div></div>
+            <div class="training-step"><div class="step-circle" style="background:var(--light);color:var(--text-muted);">3</div><div><div style="font-weight:700;font-size:13.5px;color:var(--text-muted);">Checkpoint 3: Social Reporting</div><div style="font-size:12px;color:var(--text-muted);">Not started</div></div></div>
+            <div class="training-step"><div class="step-circle" style="background:var(--light);color:var(--text-muted);">4</div><div><div style="font-weight:700;font-size:13.5px;color:var(--text-muted);">Checkpoint 4: Governance & Disclosure</div><div style="font-size:12px;color:var(--text-muted);">Not started</div></div></div>
+            <div class="training-step"><div class="step-circle" style="background:var(--light);color:var(--text-muted);">5</div><div><div style="font-weight:700;font-size:13.5px;color:var(--text-muted);">Checkpoint 5: Integrated Reporting Quiz</div><div style="font-size:12px;color:var(--text-muted);">Not started</div></div></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== SCHOLARSHIPS ========== -->
+    <section class="page-section" id="sec-scholarships">
+      <div class="page-header fade-up d0" style="display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:12px;">
+        <div><h2>Scholarships</h2><p>Post and manage scholarships to support Botswana students.</p></div>
+        <button class="btn btn-navy btn-lg" onclick="openScholarshipModal()">➕ Post Scholarship</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:16px;" class="fade-up d1">
+        <div class="card" style="border-top:4px solid var(--teal);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+            <div style="font-size:28px;">💎</div>
+            <span class="listing-status status-active">Active</span>
+          </div>
+          <div class="card-title" style="margin-bottom:6px;">Debswana STEM Bursary 2025</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">Full tuition + P1,500/month allowance</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">Supporting Batswana pursuing Geology, Mining, Engineering, or Environmental Science degrees. Recipients may be offered vacation employment at Debswana.</p>
+          <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px;">
+            <span class="tag tag-teal">Mining</span><span class="tag tag-blue">Full Bursary</span><span class="tag tag-navy">STEM</span>
+          </div>
+          <div style="background:var(--off-white);border-radius:var(--r-md);padding:10px;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;font-family:'Syne',sans-serif;color:var(--text-muted);margin-bottom:4px;">APPLICATIONS</div>
+            <div style="font-size:22px;font-weight:800;font-family:'Syne',sans-serif;color:var(--navy);">28 <span style="font-size:13px;font-weight:500;color:var(--text-muted);">received</span></div>
+          </div>
+          <div style="font-size:12px;color:var(--terra);font-weight:600;margin-bottom:14px;">⏰ Closes 15 May 2025</div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" style="flex:1">Edit</button>
+            <button class="btn btn-navy btn-sm" style="flex:2" onclick="showSection('applicants')">View Applicants</button>
+          </div>
+        </div>
+
+        <div class="card" style="border-top:4px solid var(--gold);">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:12px;">
+            <div style="font-size:28px;">🌟</div>
+            <span class="listing-status status-closed">Closed</span>
+          </div>
+          <div class="card-title" style="margin-bottom:6px;">Debswana Excellence Award 2024</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:10px;">P20,000 one-time grant</div>
+          <p style="font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.6;">Awarded to top-performing students in Mining or Geology with a minimum GPA of 3.5. 3 recipients selected in 2024.</p>
+          <div style="background:var(--off-white);border-radius:var(--r-md);padding:10px;margin-bottom:14px;">
+            <div style="font-size:12px;font-weight:700;font-family:'Syne',sans-serif;color:var(--text-muted);margin-bottom:4px;">APPLICATIONS RECEIVED</div>
+            <div style="font-size:22px;font-weight:800;font-family:'Syne',sans-serif;color:var(--navy);">47</div>
+          </div>
+          <div style="display:flex;gap:8px;">
+            <button class="btn btn-outline btn-sm" style="flex:1">View Archive</button>
+            <button class="btn btn-navy btn-sm" style="flex:2" onclick="publishListing()">Repost for 2025</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ========== COMPANY PROFILE ========== -->
+    <section class="page-section" id="sec-profile">
+      <div class="page-header fade-up d0"><h2>Company Profile</h2><p>Keep your company profile updated to attract the best candidates.</p></div>
+      <div class="two-col fade-up d1">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Company Information</span><button class="btn btn-outline btn-sm">Edit</button></div>
+            <div class="form-group"><label class="form-label">Company Name</label><input class="form-input" value="Debswana Diamond Company (Pty) Ltd" /></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Industry</label><select class="form-select"><option selected>Mining & Resources</option><option>Technology</option></select></div>
+              <div class="form-group"><label class="form-label">Company Size</label><select class="form-select"><option>1,000–5,000 employees</option><option selected>5,000+ employees</option></select></div>
+            </div>
+            <div class="form-group"><label class="form-label">Headquarters</label><input class="form-input" value="Gaborone, Botswana" /></div>
+            <div class="form-group"><label class="form-label">Website</label><input class="form-input" value="www.debswana.com" /></div>
+            <div class="form-group"><label class="form-label">Company Description</label><textarea class="form-textarea">Debswana Diamond Company is a partnership between the Government of Botswana and De Beers. Debswana operates four diamond mines in Botswana and is one of the world's leading diamond producers by volume and value.</textarea></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">HR Contact</span><button class="btn btn-outline btn-sm">Edit</button></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Contact Name</label><input class="form-input" value="Mmabatho Segoe" /></div>
+              <div class="form-group"><label class="form-label">Job Title</label><input class="form-input" value="HR Manager — Recruitment" /></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="hr@debswana.com" /></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+267 3XX XXXX" /></div>
+          </div>
+          <button class="btn btn-navy btn-lg btn-full">Save Changes</button>
+        </div>
+        <div class="card" style="align-self:start;">
+          <div style="text-align:center;padding:20px 0;">
+            <div style="width:80px;height:80px;border-radius:20px;background:linear-gradient(135deg,#0D7070,#0B1F3A);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:28px;color:#fff;margin:0 auto 14px;">D</div>
+            <div style="font-family:'Syne',sans-serif;font-weight:800;font-size:18px;margin-bottom:4px;">Debswana</div>
+            <div style="font-size:13px;color:var(--text-muted);">Mining & Resources · Botswana</div>
+          </div>
+          <div style="padding:14px 0;border-top:1px solid var(--border-light);">
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;text-align:center;">
+              <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--navy);">5</div><div style="font-size:12px;color:var(--text-muted);">Active Listings</div></div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--navy);">24</div><div style="font-size:12px;color:var(--text-muted);">Applicants</div></div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--navy);">28</div><div style="font-size:12px;color:var(--text-muted);">Scholarship Apps</div></div>
+              <div><div style="font-family:'Syne',sans-serif;font-weight:800;font-size:20px;color:var(--navy);">70</div><div style="font-size:12px;color:var(--text-muted);">Profile Views</div></div>
+            </div>
+          </div>
+          <div style="padding:14px 0;border-top:1px solid var(--border-light);">
+            <div style="font-size:12px;font-weight:700;font-family:'Syne',sans-serif;color:var(--text-muted);margin-bottom:8px;">VERIFICATION STATUS</div>
+            <div style="display:flex;align-items:center;gap:8px;"><span style="color:var(--green);">✅</span><span style="font-size:13px;font-weight:500;">Verified Company</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- CANDIDATE MODAL -->
+<div class="modal-backdrop" id="modal-candidate">
+  <div class="modal" style="max-width:560px;">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:20px;">
+      <div id="cand-avatar" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,#0D7070,#1E6FD9);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:18px;color:#fff;flex-shrink:0;">TM</div>
+      <div><div class="modal-title" id="cand-name" style="margin-bottom:2px;">Candidate Name</div><div style="font-size:13px;color:var(--text-muted);" id="cand-role">Applied for Position</div></div>
+      <div id="cand-score" style="margin-left:auto;font-family:'Syne',sans-serif;font-weight:800;font-size:26px;color:var(--green);">91%</div>
+    </div>
+    <div class="modal-divider"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px;">
+      <div style="padding:12px;background:var(--off-white);border-radius:var(--r-md);"><div style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:3px;">INSTITUTION</div><div style="font-weight:600;font-size:13.5px;">University of Botswana</div></div>
+      <div style="padding:12px;background:var(--off-white);border-radius:var(--r-md);"><div style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:3px;">DEGREE</div><div style="font-weight:600;font-size:13.5px;">BSc Computer Science</div></div>
+      <div style="padding:12px;background:var(--off-white);border-radius:var(--r-md);"><div style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:3px;">GPA</div><div style="font-weight:600;font-size:13.5px;">3.4 / 4.0</div></div>
+      <div style="padding:12px;background:var(--off-white);border-radius:var(--r-md);"><div style="font-size:11px;color:var(--text-muted);font-family:'Syne',sans-serif;font-weight:700;margin-bottom:3px;">YEAR</div><div style="font-weight:600;font-size:13.5px;">Year 3</div></div>
+    </div>
+    <div style="margin-bottom:14px;"><div style="font-size:12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);margin-bottom:8px;">SKILLS</div><div class="skills-wrap"><span class="skill-chip matched">Python</span><span class="skill-chip matched">SQL</span><span class="skill-chip matched">React</span><span class="skill-chip">AutoCAD</span></div></div>
+    <div style="margin-bottom:20px;"><div style="font-size:12px;font-family:'Syne',sans-serif;font-weight:700;color:var(--text-muted);margin-bottom:6px;">COVER LETTER EXCERPT</div><div style="font-size:13px;color:var(--text-secondary);line-height:1.65;padding:12px;background:var(--off-white);border-radius:var(--r-md);">"I am a passionate Computer Science student at UB with strong practical experience in Python and SQL. I am eager to contribute to Debswana's engineering operations and gain real-world industry exposure…"</div></div>
+    <div class="modal-footer-row">
+      <button class="btn btn-danger" style="flex:1" onclick="closeModal();showToast('Applicant declined.')">Decline</button>
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal();showToast('Shortlisted ✓')">Shortlist</button>
+      <button class="btn btn-navy" style="flex:2" onclick="closeModal();showToast('Interview invite sent!')">Send Interview Invite →</button>
+    </div>
+  </div>
+</div>
+
+<!-- CREATE TRAINING MODAL -->
+<div class="modal-backdrop" id="modal-training">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:28px;margin-bottom:12px;">📚</div>
+    <div class="modal-title">Create Training Programme</div>
+    <div class="modal-sub">Build a structured course with checkpoints for your employees or new hires.</div>
+    <div class="form-group"><label class="form-label">Programme Title</label><input class="form-input" placeholder="e.g. AML Compliance Basics" /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Target Group</label><select class="form-select"><option>All employees</option><option>New hires</option><option>Interns</option><option>Management</option></select></div>
+      <div class="form-group"><label class="form-label">Estimated Duration</label><input class="form-input" placeholder="e.g. 2 weeks" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Programme Description</label><textarea class="form-textarea" placeholder="What will employees learn and achieve?"></textarea></div>
+    <div class="form-group">
+      <label class="form-label">Checkpoints</label>
+      <div id="checkpoint-list" style="margin-bottom:10px;">
+        <div class="checkpoint-item"><div class="checkpoint-num">1</div><input class="form-input" placeholder="Checkpoint 1 title…" /><button onclick="removeCheckpoint(this)" style="background:none;border:none;color:var(--rose);font-size:18px;cursor:pointer;">✕</button></div>
+        <div class="checkpoint-item"><div class="checkpoint-num">2</div><input class="form-input" placeholder="Checkpoint 2 title…" /><button onclick="removeCheckpoint(this)" style="background:none;border:none;color:var(--rose);font-size:18px;cursor:pointer;">✕</button></div>
+      </div>
+      <button class="btn btn-outline btn-sm" onclick="addCheckpoint()">➕ Add Checkpoint</button>
+    </div>
+    <div class="modal-footer-row">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-navy" style="flex:2" onclick="closeModal();showToast('Training programme created!')">Create Programme →</button>
+    </div>
+  </div>
+</div>
+
+<!-- SCHOLARSHIP MODAL -->
+<div class="modal-backdrop" id="modal-scholarship">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:28px;margin-bottom:12px;">🎓</div>
+    <div class="modal-title">Post a Scholarship</div>
+    <div class="modal-sub">Make your scholarship visible to thousands of eligible Batswana students.</div>
+    <div class="form-group"><label class="form-label">Scholarship Name</label><input class="form-input" placeholder="e.g. Debswana STEM Bursary 2026" /></div>
+    <div class="form-row">
+      <div class="form-group"><label class="form-label">Award Type</label><select class="form-select"><option>Full Bursary</option><option>Partial Bursary</option><option>One-time Grant</option><option>Monthly Allowance</option></select></div>
+      <div class="form-group"><label class="form-label">Value (P)</label><input class="form-input" placeholder="e.g. Full Tuition + P1,500/month" /></div>
+    </div>
+    <div class="form-group"><label class="form-label">Eligible Field of Study</label><input class="form-input" placeholder="e.g. Engineering, Geology, STEM" /></div>
+    <div class="form-group"><label class="form-label">Minimum GPA / Academic Requirement</label><input class="form-input" placeholder="e.g. 3.0 / 4.0 or 60% average" /></div>
+    <div class="form-group"><label class="form-label">Application Closing Date</label><input class="form-input" type="date" /></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-textarea" placeholder="What does the scholarship cover? Who should apply?"></textarea></div>
+    <div class="modal-footer-row">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-navy" style="flex:2" onclick="closeModal();showToast('Scholarship posted!')">Publish Scholarship →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    const titles = { dashboard:'Dashboard', 'post-job':'Post New Listing', listings:'My Listings', applicants:'Applicants', training:'Training Programmes', scholarships:'Scholarships', profile:'Company Profile' };
+    document.getElementById('topbar-title').textContent = titles[id] || '';
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if(n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+    });
+  }
+  function switchTab(id) {
+    document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    event.currentTarget.classList.add('active');
+  }
+  function addSkill() {
+    const input = document.getElementById('skill-input');
+    if (!input.value.trim()) return;
+    const chip = document.createElement('span');
+    chip.className = 'skill-chip';
+    chip.style.cursor = 'pointer';
+    chip.textContent = input.value.trim() + ' ✕';
+    chip.onclick = function(){ removeSkill(this); };
+    document.getElementById('skills-list').appendChild(chip);
+    input.value = '';
+  }
+  function removeSkill(el) { el.remove(); }
+  let cpCount = 2;
+  function addCheckpoint() {
+    cpCount++;
+    const wrap = document.getElementById('checkpoint-list');
+    const item = document.createElement('div');
+    item.className = 'checkpoint-item';
+    item.innerHTML = `<div class="checkpoint-num">${cpCount}</div><input class="form-input" placeholder="Checkpoint ${cpCount} title…" /><button onclick="removeCheckpoint(this)" style="background:none;border:none;color:var(--rose);font-size:18px;cursor:pointer;">✕</button>`;
+    wrap.appendChild(item);
+  }
+  function removeCheckpoint(btn) { btn.parentElement.remove(); }
+  function openCandidateModal(name, role, score) {
+    document.getElementById('cand-name').textContent = name;
+    document.getElementById('cand-role').textContent = 'Applied for ' + role;
+    document.getElementById('cand-avatar').textContent = name.split(' ').map(w=>w[0]).join('').slice(0,2);
+    const scoreEl = document.getElementById('cand-score');
+    scoreEl.textContent = score + '%';
+    scoreEl.style.color = parseInt(score) >= 80 ? 'var(--green)' : parseInt(score) >= 65 ? 'var(--gold)' : 'var(--terra)';
+    document.getElementById('modal-candidate').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function openTrainingModal() { document.getElementById('modal-training').classList.add('active'); document.body.style.overflow='hidden'; }
+  function openScholarshipModal() { document.getElementById('modal-scholarship').classList.add('active'); document.body.style.overflow='hidden'; }
+  function closeModal() { document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active')); document.body.style.overflow=''; }
+  function publishListing() { showToast('Listing published successfully!'); }
+  function showToast(msg) {
+    const toast = document.createElement('div');
+    toast.style.cssText='position:fixed;bottom:28px;right:28px;background:#0B1F3A;color:#fff;padding:14px 22px;border-radius:12px;font-family:Syne,sans-serif;font-weight:700;font-size:13px;z-index:999;box-shadow:0 12px 40px rgba(0,0,0,0.2)';
+    toast.textContent = '✓ ' + msg;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+  document.querySelectorAll('.modal-backdrop').forEach(b => b.addEventListener('click', function(e){ if(e.target===this) closeModal(); }));
+</script>
+</body>
+</html>
