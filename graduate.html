@@ -1,1 +1,591 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>GradBridge — Graduate Dashboard</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    .avatar-grad { background: linear-gradient(135deg, #1E6FD9, #0B1F3A); }
+    .stat-icon-1 { background: var(--blue-light); }
+    .stat-icon-2 { background: var(--teal-light); }
+    .stat-icon-3 { background: var(--gold-light); }
+    .stat-icon-4 { background: var(--green-light); }
+    .job-type-tabs { display:flex; gap:8px; margin-bottom:18px; }
+    .job-tab { padding:7px 18px; border-radius:var(--r-pill); font-size:12.5px; font-family:'Syne',sans-serif; font-weight:700; cursor:pointer; border:1.5px solid var(--border); background:var(--white); color:var(--text-muted); transition:all var(--t-fast); }
+    .job-tab.active { background:var(--navy); color:#fff; border-color:var(--navy); }
+    .match-bar { display:flex; align-items:center; gap:10px; font-size:12px; }
+    .match-pct { font-family:'Syne',sans-serif; font-weight:800; font-size:18px; min-width:44px; }
+    .match-pct.high { color:var(--green); }
+    .match-pct.mid  { color:var(--gold); }
+    .match-pct.low  { color:var(--terra); }
+    .network-card { background:var(--white); border:1px solid var(--border); border-radius:var(--r-lg); padding:16px; box-shadow:var(--shadow-sm); text-align:center; transition:box-shadow var(--t-fast),transform var(--t-fast); }
+    .network-card:hover { box-shadow:var(--shadow-md); transform:translateY(-2px); }
+    .network-avatar { width:52px; height:52px; border-radius:50%; margin:0 auto 10px; display:flex; align-items:center; justify-content:center; font-family:'Syne',sans-serif; font-weight:700; font-size:16px; color:#fff; }
+    .app-status-pill { font-size:11px; font-weight:700; font-family:'Syne',sans-serif; padding:3px 10px; border-radius:var(--r-pill); }
+    .status-pending  { background:var(--gold-light); color:var(--gold); }
+    .status-review   { background:var(--blue-light); color:var(--blue); }
+    .status-accepted { background:var(--green-light); color:var(--green); }
+    .status-rejected { background:var(--rose-light); color:var(--rose); }
+    .salary-badge { font-size:12px; font-weight:700; font-family:'Syne',sans-serif; color:var(--navy); background:var(--light); padding:4px 10px; border-radius:var(--r-pill); }
+  </style>
+</head>
+<body>
+<div class="layout">
 
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <a href="gradbridge-home.html" class="sidebar-brand">
+      <div class="sidebar-brand-icon">G</div>
+      <span class="sidebar-brand-name">GradBridge</span>
+    </a>
+    <nav class="sidebar-nav">
+      <div style="padding:18px 8px 6px;display:block;font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);">Main</div>
+      <div class="nav-item active" onclick="showSection('dashboard')"><span class="nav-item-icon">🏠</span>Dashboard</div>
+      <div class="nav-item" onclick="showSection('jobs')"><span class="nav-item-icon">💼</span>Job Listings<span class="nav-badge">28</span></div>
+      <div class="nav-item" onclick="showSection('internships')"><span class="nav-item-icon">🔗</span>Internships</div>
+      <div class="nav-item" onclick="showSection('skills')"><span class="nav-item-icon">🧠</span>Skills Gap</div>
+      <div class="nav-item" onclick="showSection('courses')"><span class="nav-item-icon">📚</span>Training Courses</div>
+      <div class="nav-item" onclick="showSection('network')"><span class="nav-item-icon">🤝</span>Network</div>
+      <div style="height:1px;background:rgba(255,255,255,0.07);margin:14px 0;"></div>
+      <div style="padding:0 8px 6px;font-family:'Syne',sans-serif;font-size:9.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;color:rgba(255,255,255,0.4);">My Activity</div>
+      <div class="nav-item" onclick="showSection('applications')"><span class="nav-item-icon">📋</span>Applications</div>
+      <div class="nav-item" onclick="showSection('saved')"><span class="nav-item-icon">🔖</span>Saved Jobs</div>
+      <div class="nav-item" onclick="showSection('profile')"><span class="nav-item-icon">👤</span>My Profile</div>
+    </nav>
+    <div class="sidebar-footer">
+      <div class="sidebar-user">
+        <div class="sidebar-avatar avatar-grad">KN</div>
+        <div class="sidebar-user-info">
+          <div class="sidebar-user-name">Keabetswe Nkosi</div>
+          <div class="sidebar-user-role">Graduate · BSc IT</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- TOPBAR -->
+  <header class="topbar">
+    <span class="topbar-title" id="topbar-title">Dashboard</span>
+    <div class="topbar-right">
+      <div class="topbar-search">
+        <span style="color:var(--text-muted);font-size:14px;">🔍</span>
+        <input type="text" placeholder="Search jobs, companies…" />
+      </div>
+      <button class="topbar-icon-btn">🔔<span class="notif-dot"></span></button>
+      <div class="topbar-avatar avatar-grad">KN</div>
+    </div>
+  </header>
+
+  <main class="main">
+
+    <!-- DASHBOARD -->
+    <section class="page-section active" id="sec-dashboard">
+      <div class="page-header fade-up d0">
+        <h2>Welcome back, Keabetswe 🎓</h2>
+        <p>You have 3 new job matches and 1 interview request waiting.</p>
+      </div>
+      <div class="stats-grid fade-up d1">
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-1">💼</div><span class="stat-card-badge badge-new">+3 new</span></div>
+          <div class="stat-card-num">28</div>
+          <div class="stat-card-label">Job Matches</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-2">📋</div><span class="stat-card-badge badge-up">Active</span></div>
+          <div class="stat-card-num">6</div>
+          <div class="stat-card-label">Applications Sent</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-3">📅</div></div>
+          <div class="stat-card-num">1</div>
+          <div class="stat-card-label">Interview Scheduled</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-top"><div class="stat-card-icon stat-icon-4">👁️</div><span class="stat-card-badge badge-up">↑ 12%</span></div>
+          <div class="stat-card-num">47</div>
+          <div class="stat-card-label">Profile Views</div>
+        </div>
+      </div>
+
+      <div class="two-col-3-1 fade-up d2">
+        <div class="card">
+          <div class="card-header"><span class="card-title">Top Job Matches</span><a class="card-link" onclick="showSection('jobs')">View all →</a></div>
+          <div class="listing-item">
+            <div class="listing-logo">🏦</div>
+            <div class="listing-info">
+              <div class="listing-title">Systems Analyst — Barclays Bank BW</div>
+              <div class="listing-meta"><span>Gaborone</span><span class="listing-meta-sep">·</span><span class="salary-badge">P18,000–22,000/mo</span><span class="listing-meta-sep">·</span><span class="tag tag-teal">Permanent</span></div>
+            </div>
+            <div class="listing-actions">
+              <div class="match-bar"><span class="match-pct high">91%</span></div>
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('Systems Analyst','Barclays Bank BW')">Apply</button>
+            </div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">⚡</div>
+            <div class="listing-info">
+              <div class="listing-title">Software Developer — BPC</div>
+              <div class="listing-meta"><span>Gaborone</span><span class="listing-meta-sep">·</span><span class="salary-badge">P15,000–18,000/mo</span><span class="listing-meta-sep">·</span><span class="tag tag-teal">Permanent</span></div>
+            </div>
+            <div class="listing-actions">
+              <div class="match-bar"><span class="match-pct high">87%</span></div>
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('Software Developer','BPC')">Apply</button>
+            </div>
+          </div>
+          <div class="listing-item">
+            <div class="listing-logo">🏪</div>
+            <div class="listing-info">
+              <div class="listing-title">IT Support Officer — Choppies Group</div>
+              <div class="listing-meta"><span>Gaborone</span><span class="listing-meta-sep">·</span><span class="salary-badge">P10,000–13,000/mo</span><span class="listing-meta-sep">·</span><span class="tag tag-blue">Contract</span></div>
+            </div>
+            <div class="listing-actions">
+              <div class="match-bar"><span class="match-pct mid">74%</span></div>
+              <button class="btn btn-navy btn-sm" onclick="openApplyModal('IT Support Officer','Choppies Group')">Apply</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="profile-completion">
+            <div class="profile-completion-pct">84%</div>
+            <div class="profile-completion-label">Profile Complete</div>
+            <div class="profile-completion-bar"><div class="profile-completion-fill" style="width:84%"></div></div>
+            <button class="btn btn-sm" style="margin-top:14px;background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25)" onclick="showSection('profile')">Complete Profile</button>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Notifications</span></div>
+            <div class="notif-item">
+              <div class="notif-dot-icon" style="background:var(--blue)"></div>
+              <div><div class="notif-text">Interview request from Barclays Bank BW</div><div class="notif-time">1 hour ago</div></div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot-icon" style="background:var(--green)"></div>
+              <div><div class="notif-text">Your application to BPC is under review</div><div class="notif-time">Yesterday</div></div>
+            </div>
+            <div class="notif-item">
+              <div class="notif-dot-icon" style="background:var(--gold)"></div>
+              <div><div class="notif-text">3 new jobs match your profile today</div><div class="notif-time">2 days ago</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Interview Scheduled -->
+      <div class="card fade-up d3" style="background:linear-gradient(135deg,var(--navy),var(--navy-700));color:#fff;">
+        <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:16px;">
+          <div>
+            <div style="font-size:11px;font-family:'Syne',sans-serif;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.6;margin-bottom:6px;">📅 Upcoming Interview</div>
+            <div style="font-family:'Syne',sans-serif;font-size:18px;font-weight:800;margin-bottom:4px;">Systems Analyst — Barclays Bank BW</div>
+            <div style="font-size:13px;opacity:0.65;">Wednesday, 26 March 2025 · 10:00 AM · Video Call</div>
+          </div>
+          <div style="display:flex;gap:10px;">
+            <button class="btn" style="background:rgba(255,255,255,0.15);color:#fff;border:1px solid rgba(255,255,255,0.25);">Add to Calendar</button>
+            <button class="btn" style="background:#fff;color:var(--navy);">Join Meeting →</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOBS -->
+    <section class="page-section" id="sec-jobs">
+      <div class="page-header fade-up d0">
+        <h2>Job Listings</h2>
+        <p>Permanent, contract, and part-time roles from verified Botswana employers.</p>
+      </div>
+      <div class="filters-bar fade-up d1">
+        <div class="search-input-bar"><span>🔍</span><input type="text" placeholder="Search roles, companies…" /></div>
+        <select class="filter-select"><option>All Types</option><option>Permanent</option><option>Contract</option><option>Part-time</option></select>
+        <select class="filter-select"><option>All Industries</option><option>Technology</option><option>Finance</option><option>Engineering</option><option>Government</option><option>Retail</option></select>
+        <select class="filter-select"><option>All Locations</option><option>Gaborone</option><option>Francistown</option><option>Maun</option></select>
+        <select class="filter-select"><option>Salary</option><option>Under P10k</option><option>P10k–P20k</option><option>P20k+</option></select>
+      </div>
+      <div class="job-type-tabs fade-up d1">
+        <button class="job-tab active">All Jobs</button>
+        <button class="job-tab">Best Match</button>
+        <button class="job-tab">Permanent</button>
+        <button class="job-tab">Contract</button>
+        <button class="job-tab">Entry Level</button>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;" class="fade-up d2">
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">🏦</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Systems Analyst</span>
+              <span class="tag tag-teal">Permanent</span>
+              <span class="tag tag-green">91% Match</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Barclays Bank BW · Gaborone · P18,000–22,000/month</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Analyse banking systems, develop reports, and collaborate with the IT department to implement technology solutions. Degree in IT/CS required. 0–2 years experience acceptable.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span class="skill-chip matched">SQL</span><span class="skill-chip matched">Python</span><span class="skill-chip matched">Report Writing</span><span class="skill-chip">Power BI</span><span class="skill-chip missing">JIRA</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Systems Analyst','Barclays Bank BW')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">⚡</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Software Developer</span>
+              <span class="tag tag-teal">Permanent</span>
+              <span class="tag tag-green">87% Match</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">BPC · Gaborone · P15,000–18,000/month</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Develop and maintain internal software tools, web portals, and APIs used across BPC's operations. Agile team environment. Graduate-friendly role with formal training.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span class="skill-chip matched">JavaScript</span><span class="skill-chip matched">React</span><span class="skill-chip">Node.js</span><span class="skill-chip missing">DevOps</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Software Developer','BPC')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">📊</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Junior Data Analyst</span>
+              <span class="tag tag-blue">Contract</span>
+              <span class="tag tag-gold">74% Match</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Statistics Botswana · Gaborone · P12,000/month · 12-month contract</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Support national statistics collection and analysis for Botswana's census and economic surveys. Work with Excel, SPSS, and government databases.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span class="skill-chip matched">Data Analysis</span><span class="skill-chip matched">Excel</span><span class="skill-chip missing">SPSS</span><span class="skill-chip">Statistics</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Junior Data Analyst','Statistics Botswana')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">💊</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Health IT Officer</span>
+              <span class="tag tag-teal">Permanent</span>
+              <span class="tag tag-terra">58% Match</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Ministry of Health · Gaborone · P11,500/month</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Manage health information systems across district hospitals and clinics, support data entry staff, and prepare national health reports for senior management.</div>
+            <div class="skills-wrap" style="margin-bottom:12px;">
+              <span class="skill-chip matched">IT Support</span><span class="skill-chip missing">DHIS2</span><span class="skill-chip">Database Admin</span>
+            </div>
+          </div>
+          <div style="display:flex;flex-direction:column;align-items:flex-end;gap:8px;flex-shrink:0;">
+            <button class="btn btn-navy" onclick="openApplyModal('Health IT Officer','Ministry of Health')">Apply Now</button>
+            <button class="btn btn-outline btn-sm">🔖 Save</button>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- INTERNSHIPS FOR GRADUATES -->
+    <section class="page-section" id="sec-internships">
+      <div class="page-header fade-up d0">
+        <h2>Graduate Internships</h2>
+        <p>Structured programmes for recent graduates to gain hands-on experience before permanent employment.</p>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:14px;" class="fade-up d1">
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">🏦</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Mascom Graduate Trainee Programme</span>
+              <span class="tag tag-blue">12 months</span>
+              <span class="tag tag-green">Graduates Only</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Mascom Wireless · Gaborone · P5,000/month stipend</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">A structured 12-month rotational programme exposing graduates to Network, IT, Finance, and Customer Experience departments. Graduates who perform well are offered permanent roles.</div>
+          </div>
+          <button class="btn btn-navy" onclick="openApplyModal('Graduate Trainee Programme','Mascom Wireless')">Apply</button>
+        </div>
+        <div class="card" style="display:flex;align-items:flex-start;gap:16px;padding:20px;">
+          <div class="listing-logo" style="width:52px;height:52px;font-size:22px;">💎</div>
+          <div style="flex:1;">
+            <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px;">
+              <span class="card-title">Debswana Engineering Graduate Programme</span>
+              <span class="tag tag-gold">18 months</span>
+              <span class="tag tag-green">Graduates Only</span>
+            </div>
+            <div style="font-size:13px;color:var(--text-muted);margin-bottom:10px;">Debswana Diamond Company · Jwaneng · P7,000/month stipend</div>
+            <div style="font-size:13px;color:var(--text-secondary);margin-bottom:12px;line-height:1.6;">Industry-leading graduate programme in mechanical, electrical, and mining engineering. Mentorship-driven with internationally recognised certification upon completion.</div>
+          </div>
+          <button class="btn btn-navy" onclick="openApplyModal('Engineering Graduate Programme','Debswana')">Apply</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- SKILLS GAP -->
+    <section class="page-section" id="sec-skills">
+      <div class="page-header fade-up d0">
+        <h2>Skills Gap Analysis</h2>
+        <p>See which skills top employers need and where you stand. Enrol in courses to fill the gaps.</p>
+      </div>
+      <div class="two-col fade-up d1">
+        <div class="card">
+          <div class="card-title" style="margin-bottom:4px;">Your Skills</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">Based on your profile and uploaded CV</div>
+          <div class="skills-wrap">
+            <span class="skill-chip matched">Python</span><span class="skill-chip matched">SQL</span><span class="skill-chip matched">JavaScript</span><span class="skill-chip matched">React</span><span class="skill-chip matched">Data Analysis</span><span class="skill-chip matched">Report Writing</span><span class="skill-chip matched">Excel</span><span class="skill-chip matched">IT Support</span>
+          </div>
+        </div>
+        <div class="card">
+          <div class="card-title" style="margin-bottom:4px;">Skills Employers Want</div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-bottom:16px;">Most requested in your field this month</div>
+          <div class="skills-wrap">
+            <span class="skill-chip matched">Python</span><span class="skill-chip matched">SQL</span><span class="skill-chip missing">Power BI</span><span class="skill-chip missing">Azure</span><span class="skill-chip matched">React</span><span class="skill-chip missing">Docker</span><span class="skill-chip missing">JIRA</span><span class="skill-chip matched">Excel</span>
+          </div>
+          <div style="margin-top:14px;padding:12px;background:var(--terra-light);border-radius:var(--r-lg);border:1px solid rgba(196,82,42,0.15);">
+            <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:13px;color:var(--terra);margin-bottom:4px;">⚠ 4 skill gaps identified</div>
+            <div style="font-size:12.5px;color:var(--text-secondary);">Enrol in courses for Power BI, Azure, Docker, and JIRA to boost your match rate to 95%+</div>
+          </div>
+        </div>
+      </div>
+      <div class="card fade-up d2">
+        <div class="card-header"><span class="card-title">Recommended Courses to Fill Your Gaps</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px;">
+          <div class="module-card">
+            <div class="module-card-header" style="background:var(--blue-light);">📊</div>
+            <div class="module-card-body">
+              <div class="module-card-title">Power BI Essentials</div>
+              <div class="module-card-meta">Microsoft · 5 lessons · Free</div>
+              <button class="btn btn-navy btn-full" style="margin-top:10px;">Enrol</button>
+            </div>
+          </div>
+          <div class="module-card">
+            <div class="module-card-header" style="background:var(--teal-light);">☁️</div>
+            <div class="module-card-body">
+              <div class="module-card-title">Azure Cloud Fundamentals</div>
+              <div class="module-card-meta">BPC · 8 lessons · Free</div>
+              <button class="btn btn-navy btn-full" style="margin-top:10px;">Enrol</button>
+            </div>
+          </div>
+          <div class="module-card">
+            <div class="module-card-header" style="background:var(--gold-light);">🐳</div>
+            <div class="module-card-body">
+              <div class="module-card-title">Docker for Developers</div>
+              <div class="module-card-meta">Mascom · 6 lessons · Free</div>
+              <button class="btn btn-navy btn-full" style="margin-top:10px;">Enrol</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- COURSES -->
+    <section class="page-section" id="sec-courses">
+      <div class="page-header fade-up d0">
+        <h2>Training Courses</h2>
+        <p>Employer-created courses to upskill and prepare you for today's workplace.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:16px;" class="fade-up d1">
+        <div class="module-card"><div class="module-card-header" style="background:var(--teal-light);">📊</div><div class="module-card-body"><div class="module-card-title">Excel for Finance</div><div class="module-card-meta">By FNB · 6 lessons · Free</div><div class="module-progress-label"><span>Progress</span><span style="color:var(--teal)">4/6</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:66%"></div></div><button class="btn btn-teal btn-full" style="margin-top:12px;">Continue</button></div></div>
+        <div class="module-card"><div class="module-card-header" style="background:var(--blue-light);">🔒</div><div class="module-card-body"><div class="module-card-title">AML &amp; Compliance</div><div class="module-card-meta">By Barclays · 5 lessons · Free</div><div class="module-progress-label"><span>Not started</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div><button class="btn btn-outline btn-full" style="margin-top:12px;">Start</button></div></div>
+        <div class="module-card"><div class="module-card-header" style="background:var(--gold-light);">🤝</div><div class="module-card-body"><div class="module-card-title">Workplace Readiness</div><div class="module-card-meta">By GradBridge · 5 lessons · Free</div><div class="module-progress-label"><span>Not started</span></div><div class="progress-bar-wrap"><div class="progress-bar-fill" style="width:0%"></div></div><button class="btn btn-outline btn-full" style="margin-top:12px;">Start</button></div></div>
+      </div>
+    </section>
+
+    <!-- NETWORK -->
+    <section class="page-section" id="sec-network">
+      <div class="page-header fade-up d0">
+        <h2>Network</h2>
+        <p>Connect with graduates, mentors, and professionals in your industry.</p>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:16px;" class="fade-up d1">
+        <div class="network-card">
+          <div class="network-avatar" style="background:linear-gradient(135deg,#0D7070,#1E6FD9);">BM</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Boitshwarelo M.</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Software Eng · BPC</div>
+          <button class="btn btn-outline btn-sm btn-full">Connect</button>
+        </div>
+        <div class="network-card">
+          <div class="network-avatar" style="background:linear-gradient(135deg,#C4522A,#1E6FD9);">LT</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Lesego Tau</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Data Analyst · Barclays</div>
+          <button class="btn btn-navy btn-sm btn-full">Connected ✓</button>
+        </div>
+        <div class="network-card">
+          <div class="network-avatar" style="background:linear-gradient(135deg,#C98A0A,#0B1F3A);">OM</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Oabona Molefe</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Finance Lead · Letshego</div>
+          <button class="btn btn-outline btn-sm btn-full">Connect</button>
+        </div>
+        <div class="network-card">
+          <div class="network-avatar" style="background:linear-gradient(135deg,#0f9d6e,#0D7070);">TK</div>
+          <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:14px;margin-bottom:2px;">Tiro Khumalo</div>
+          <div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">Mentor · Debswana</div>
+          <button class="btn btn-outline btn-sm btn-full">Connect</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- APPLICATIONS -->
+    <section class="page-section" id="sec-applications">
+      <div class="page-header fade-up d0">
+        <h2>My Applications</h2>
+        <p>Track every job and internship application you've submitted.</p>
+      </div>
+      <div class="card fade-up d1">
+        <div class="applicant-row applicant-row-header"><div>Position</div><div>Company</div><div>Type</div><div>Status</div><div>Action</div></div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">Systems Analyst</div><div style="font-size:12px;color:var(--text-muted);">Applied 12 Mar 2025</div></div>
+          <div style="color:var(--text-secondary);">Barclays Bank BW</div>
+          <div><span class="tag tag-teal">Permanent</span></div>
+          <div><span class="app-status-pill status-review">Interview Scheduled</span></div>
+          <div><button class="btn btn-ghost btn-sm">View</button></div>
+        </div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">Software Developer</div><div style="font-size:12px;color:var(--text-muted);">Applied 10 Mar 2025</div></div>
+          <div style="color:var(--text-secondary);">BPC</div>
+          <div><span class="tag tag-teal">Permanent</span></div>
+          <div><span class="app-status-pill status-review">Under Review</span></div>
+          <div><button class="btn btn-ghost btn-sm">View</button></div>
+        </div>
+        <div class="applicant-row">
+          <div><div style="font-weight:600;font-size:13.5px;">Graduate Trainee</div><div style="font-size:12px;color:var(--text-muted);">Applied 1 Mar 2025</div></div>
+          <div style="color:var(--text-secondary);">Mascom</div>
+          <div><span class="tag tag-blue">Programme</span></div>
+          <div><span class="app-status-pill status-pending">Pending</span></div>
+          <div><button class="btn btn-ghost btn-sm">View</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- SAVED -->
+    <section class="page-section" id="sec-saved">
+      <div class="page-header fade-up d0"><h2>Saved Jobs</h2><p>Roles you've bookmarked to review later.</p></div>
+      <div class="card fade-up d1">
+        <div class="listing-item">
+          <div class="listing-logo">📊</div>
+          <div class="listing-info"><div class="listing-title">Junior Data Analyst — Statistics Botswana</div><div class="listing-meta"><span>Gaborone</span><span class="listing-meta-sep">·</span><span>P12,000/mo</span><span class="listing-meta-sep">·</span><span class="tag tag-blue">Contract</span></div></div>
+          <div class="listing-actions"><button class="btn btn-navy btn-sm" onclick="openApplyModal('Junior Data Analyst','Statistics Botswana')">Apply</button><button class="btn btn-outline btn-sm">Remove</button></div>
+        </div>
+        <div class="listing-item">
+          <div class="listing-logo">💊</div>
+          <div class="listing-info"><div class="listing-title">Health IT Officer — Ministry of Health</div><div class="listing-meta"><span>Gaborone</span><span class="listing-meta-sep">·</span><span>P11,500/mo</span><span class="listing-meta-sep">·</span><span class="tag tag-teal">Permanent</span></div></div>
+          <div class="listing-actions"><button class="btn btn-navy btn-sm" onclick="openApplyModal('Health IT Officer','Ministry of Health')">Apply</button><button class="btn btn-outline btn-sm">Remove</button></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE -->
+    <section class="page-section" id="sec-profile">
+      <div class="page-header fade-up d0"><h2>My Profile</h2><p>A complete profile gets 3x more views from employers.</p></div>
+      <div class="two-col-3-1 fade-up d1">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="card">
+            <div class="card-header"><span class="card-title">Personal Info</span><button class="btn btn-outline btn-sm">Edit</button></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">First Name</label><input class="form-input" value="Keabetswe" /></div>
+              <div class="form-group"><label class="form-label">Surname</label><input class="form-input" value="Nkosi" /></div>
+            </div>
+            <div class="form-group"><label class="form-label">Email</label><input class="form-input" value="keabetswe@gmail.com" /></div>
+            <div class="form-group"><label class="form-label">Phone</label><input class="form-input" value="+267 7X XXX XXX" /></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Qualification</span><button class="btn btn-outline btn-sm">Edit</button></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Degree</label><input class="form-input" value="BSc Information Technology" /></div>
+              <div class="form-group"><label class="form-label">Institution</label><input class="form-input" value="BIUST" /></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Year Graduated</label><input class="form-input" value="2024" /></div>
+              <div class="form-group"><label class="form-label">GPA</label><input class="form-input" value="3.6 / 4.0" /></div>
+            </div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Skills</span><button class="btn btn-outline btn-sm">Add</button></div>
+            <div class="skills-wrap"><span class="skill-chip">Python</span><span class="skill-chip matched">SQL</span><span class="skill-chip matched">JavaScript</span><span class="skill-chip matched">React</span><span class="skill-chip">Excel</span><span class="skill-chip matched">Data Analysis</span></div>
+          </div>
+          <div class="card">
+            <div class="card-header"><span class="card-title">Work Preference</span></div>
+            <div class="form-row">
+              <div class="form-group"><label class="form-label">Looking For</label><select class="form-select"><option>Permanent Role</option><option>Both</option><option>Contract</option></select></div>
+              <div class="form-group"><label class="form-label">Availability</label><select class="form-select"><option>Immediately</option><option>1 month notice</option></select></div>
+            </div>
+          </div>
+          <button class="btn btn-navy btn-lg btn-full">Save Changes</button>
+        </div>
+        <div>
+          <div class="profile-completion"><div class="profile-completion-pct">84%</div><div class="profile-completion-label">Profile Complete</div><div class="profile-completion-bar"><div class="profile-completion-fill" style="width:84%"></div></div></div>
+          <div class="card" style="margin-top:16px;">
+            <div class="card-title" style="margin-bottom:12px;">Complete Your Profile</div>
+            <div class="timeline">
+              <div class="timeline-item done"><div class="timeline-label">Personal Info</div></div>
+              <div class="timeline-item done"><div class="timeline-label">Qualifications</div></div>
+              <div class="timeline-item done"><div class="timeline-label">CV Uploaded</div></div>
+              <div class="timeline-item active"><div class="timeline-label">Add References</div><div class="timeline-sub">2 professional references</div></div>
+              <div class="timeline-item"><div class="timeline-label">LinkedIn Link</div></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+</div>
+
+<!-- APPLY MODAL -->
+<div class="modal-backdrop" id="modal-apply">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕</button>
+    <div style="font-size:28px;margin-bottom:12px;">📨</div>
+    <div class="modal-title" id="modal-apply-title">Apply for Position</div>
+    <div class="modal-sub" id="modal-apply-sub">Submit your application via GradBridge.</div>
+    <div class="form-group"><label class="form-label">Cover Letter</label><textarea class="form-textarea" placeholder="Tell the employer why you're the right fit…"></textarea></div>
+    <div class="form-group"><label class="form-label">Attach CV</label><input class="form-input" type="file" accept=".pdf,.doc,.docx" /></div>
+    <div class="form-group"><label class="form-label">Any additional notes?</label><input class="form-input" type="text" placeholder="e.g. Available from April 2025" /></div>
+    <div class="modal-footer-row">
+      <button class="btn btn-outline" style="flex:1" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-navy" style="flex:2" onclick="submitApplication()">Submit Application →</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  function showSection(id) {
+    document.querySelectorAll('.page-section').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+    document.getElementById('sec-' + id).classList.add('active');
+    const titles = { dashboard:'Dashboard', jobs:'Job Listings', internships:'Graduate Internships', skills:'Skills Gap Analysis', courses:'Training Courses', network:'Network', applications:'My Applications', saved:'Saved Jobs', profile:'My Profile' };
+    document.getElementById('topbar-title').textContent = titles[id] || '';
+    document.querySelectorAll('.nav-item').forEach(n => {
+      if(n.getAttribute('onclick') && n.getAttribute('onclick').includes("'"+id+"'")) n.classList.add('active');
+    });
+  }
+  function openApplyModal(role, company) {
+    document.getElementById('modal-apply-title').textContent = 'Apply — ' + role;
+    document.getElementById('modal-apply-sub').textContent = 'Submitting to ' + company + ' via GradBridge.';
+    document.getElementById('modal-apply').classList.add('active');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeModal() {
+    document.querySelectorAll('.modal-backdrop').forEach(m => m.classList.remove('active'));
+    document.body.style.overflow = '';
+  }
+  function submitApplication() {
+    closeModal();
+    const toast = document.createElement('div');
+    toast.style.cssText = 'position:fixed;bottom:28px;right:28px;background:#0B1F3A;color:#fff;padding:14px 22px;border-radius:12px;font-family:Syne,sans-serif;font-weight:700;font-size:13px;z-index:999;box-shadow:0 12px 40px rgba(0,0,0,0.2)';
+    toast.textContent = '✓ Application submitted!';
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 3500);
+  }
+  document.querySelectorAll('.modal-backdrop').forEach(b => b.addEventListener('click', function(e){ if(e.target===this) closeModal(); }));
+  document.querySelectorAll('.job-tab').forEach(t => t.addEventListener('click', function(){ document.querySelectorAll('.job-tab').forEach(x => x.classList.remove('active')); this.classList.add('active'); }));
+</script>
+</body>
+</html>
